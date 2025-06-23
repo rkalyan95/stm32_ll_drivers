@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "stm32l433_ll_rcc_cfg.h": "c",
+        "stm32l433_ll_rcc.h": "c",
+        "stm32l433xx.h": "c"
+    }
+}
