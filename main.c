@@ -8,20 +8,22 @@
 #define LED_PIN 13
 
 
-GPIO_TypeDef *Gpio_Configs = ((GPIO_TypeDef *) GPIOB_BASE);
-
+GPIO_TypeDef *GpioB_Configs = ((GPIO_TypeDef *) GPIOB_BASE);
+GPIO_TypeDef *GpioA_Configs = ((GPIO_TypeDef *) GPIOA_BASE);
 
 void main(void)
 {
 
     Rcc_Init();
 
-    Gpio_Configs->MODER &= ~(1<<27);
-    Gpio_Configs->MODER |= (1<<26);
+    GpioB_Configs->MODER &= ~(1<<27);
+    GpioB_Configs->MODER |= (1<<26);
 
+    GpioA_Configs->MODER &= ~(1<<16);
+    GpioA_Configs->MODER |= (1<<17);
     while(1)
     {
-        Gpio_Configs->ODR ^= (1<<LED_PIN);
+        GpioB_Configs->ODR ^= (1<<LED_PIN);
         for(uint32_t i=0;i<100000;i++);
     }
 

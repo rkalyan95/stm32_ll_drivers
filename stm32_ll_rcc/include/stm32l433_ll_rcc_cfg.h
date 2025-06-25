@@ -4,6 +4,28 @@
 #include <stdint.h>
 #include <stm32l433xx.h>
 
+enum 
+{
+    CLK_DISABLED=0,
+    SYSCLK,
+    MSICLK,
+    HSI16CLK,
+    HSECLK,
+    MAINPLL,
+    LSICLK,
+    LSECLK,
+    HSI48,
+    INVALID,
+};
+
+enum
+{
+    DIV1=0,
+    DIV2,
+    DIV4,
+    DIV8,
+    DIV16,
+};
 
 // --- RCC_CR (Clock Control Register) ---
 typedef struct
