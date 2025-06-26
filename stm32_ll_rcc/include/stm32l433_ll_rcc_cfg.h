@@ -778,5 +778,5 @@ typedef union
 
 extern volatile RCC_CSR_Reg_t RCC_CSR_Reg;
 
-void Rcc_Init(void);
+
 #endif
