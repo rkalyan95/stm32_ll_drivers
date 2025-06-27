@@ -10,7 +10,9 @@ SECTIONS
 {
 	.isr_vector :
 	{
+	  . = ORIGIN(FLASH); /* <--- ADD THIS LINE: Explicitly set current address to Flash origin */
 	  KEEP(*(.isr_vector))
+	  . = ALIGN(4);      /* Ensure next section starts on 4-byte boundary */
 	}>FLASH
 	
 	.text :
