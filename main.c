@@ -11,11 +11,18 @@
 GPIO_TypeDef *GpioB_Configs = ((GPIO_TypeDef *) GPIOB_BASE);
 GPIO_TypeDef *GpioA_Configs = ((GPIO_TypeDef *) GPIOA_BASE);
 
+/* Implement Rcc_Init with argument pointer to something that contains the data
+   regarding which clocks to initialise 
+   example Rcc_Init(const Rcc_t *Rcc_Config)
 
+   This will help end users to configure the RCC as per their needs
+   similarly for Gpio_Init
+   example Gpio_Init(const Gpio_t *Gpio_Config)
+   */
 void main(void)
 {
 
-   Rcc_Init();
+   Rcc_InitSystemClocks();
    Gpio_Init();
    while(1)
     {
