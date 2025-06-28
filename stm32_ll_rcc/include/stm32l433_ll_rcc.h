@@ -8,6 +8,6 @@
 #define CLEAR(x,pos)   (x &= ~(1<<pos))
 #define TOGGLE(x,pos) (x ^= 1<<pos)
 
-void Rcc_Init(void);
+void Rcc_InitSystemClocks(void);
 
 #endif

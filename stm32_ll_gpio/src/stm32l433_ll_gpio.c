@@ -7,7 +7,9 @@ void Gpio_Init(void)
 {
     GPIO_TypeDef *GpioB_Configs = ((GPIO_TypeDef *) GPIOB_BASE);
     GPIO_TypeDef *GpioA_Configs = ((GPIO_TypeDef *) GPIOA_BASE);
+
     GpioA_Configs->MODER = GPIOA_MODER_Reg.U;
+    GpioA_Configs->AFR[1] = GPIOA_AFRH_Reg.U; // Set alternate function for pins 13 and 14
     GpioB_Configs->MODER = GPIOB_MODER_Reg.U;
 }
 
