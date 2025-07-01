@@ -18,7 +18,7 @@ volatile RCC_CR_Reg_t RCC_CR_Reg = {
                                 
 };
 
-volatile RCC_CFGR_Reg_t RCC_CFGR_Reg = {
+volatile RCC_CFGR_Reg_t RCC_CFGR_Reg = { 
                 .B.SW = SW_MSI_SETTING, // Select MSI as system clock
                 .B.HPRE = RCC_CFGR_HPRE_DIV1_SETTING, // AHB prescaler set to 1
                 .B.PPRE1 = RCC_CFGR_PPRE1_DIV1_SETTING, // AP
