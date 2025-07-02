@@ -10,7 +10,8 @@
 #define SET_BITS(v, p, n, new_val) \
   ((v) = ((v) & ~(((1UL << (n)) - 1) << (p))) | (((new_val) & ((1UL << (n)) - 1)) << (p)))
 #include <stdint.h>
-#include "stm32l433_ll_gpio_cfg.h"
+#include <stm32l433xx.h>
+
 typedef enum 
 {
     GPIO_PORT_A = 0,
@@ -98,5 +99,8 @@ typedef struct
 void Gpio_Init(void);
 void Gpio_TogglePin(uint8_t port , uint8_t pin);
 GPIO_TypeDef *GetPortAddress(uint8_t port);
-void Gpio_ConfigPin(portpintconfigs_t *portpinconfigs);
+void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs);
+void Gpio_ClearPin(uint8_t port , uint8_t pin);
+void Gpio_SetPin(uint8_t port , uint8_t pin);
+void Gpio_GetPin(uint8_t port , uint8_t pin);
 #endif // STM32L433_LL_GPIO_H

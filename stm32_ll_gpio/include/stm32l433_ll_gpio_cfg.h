@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 #include <stm32l433xx.h>
+#include <stm32l433_ll_gpio.h>
+#define MAX_PIN_CONFIGS    2
+
+extern const portpintconfigs_t Stm32NucleoConfigsPortB[MAX_PIN_CONFIGS];
+
 
 enum {
     GPIO_MODE_INPUT = 0x0,   // Input mode

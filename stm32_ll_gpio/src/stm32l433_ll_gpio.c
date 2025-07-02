@@ -46,10 +46,8 @@ GPIO_TypeDef *GetPortAddress(uint8_t port)
     return Gpio_Port;
 }
 
-void Gpio_ConfigPin(portpintconfigs_t *portpinconfigs)
+void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs)
 {
-    //ToDo : Implement the speed configs and pushpull config handling in this function
-
     uint8_t pinrange;
 
     GPIO_TypeDef *Gpio_Port;
@@ -86,13 +84,53 @@ void Gpio_ConfigPin(portpintconfigs_t *portpinconfigs)
     }
 
 /* configure the pull configuration*/
-       // SET_BITS(Gpio_Port->PUPDR,((portpinconfigs->pin) << 1),2,portpinconfigs->pullconfig);
+        SET_BITS(Gpio_Port->PUPDR,((portpinconfigs->pin) << 1),2,portpinconfigs->pullconfig);
 
 /* config the pushpull/open drain using OT register*/
-        //SET_BITS(Gpio_Port->OTYPER,(portpinconfigs->pin),1,portpinconfigs->outputpushpull);
+        SET_BITS(Gpio_Port->OTYPER,(portpinconfigs->pin),1,portpinconfigs->outputpushpull);
 }
 
+void Gpio_SetPin(uint8_t port , uint8_t pin)
+{
+    GPIO_TypeDef *Gpio_Port;
+    if(Gpio_Port!=0)
+    {
+        SET(Gpio_Port->ODR, pin); // Toggle the LED pin
+    }
+    else
+    {
+        /*Do nothing*/
+    }
 
+}
+
+void Gpio_ClearPin(uint8_t port , uint8_t pin)
+{
+    GPIO_TypeDef *Gpio_Port;
+    if(Gpio_Port!=0)
+    {
+        CLEAR(Gpio_Port->ODR, pin); // Toggle the LED pin
+    }
+    else
+    {
+        /*Do nothing*/
+    }
+
+}
+
+void Gpio_GetPin(uint8_t port ,uint8_t pin)
+{
+    GPIO_TypeDef *Gpio_Port;
+    if(Gpio_Port!=0)
+    {
+        TOGGLE(Gpio_Port->ODR, pin); // Toggle the LED pin
+    }
+    else
+    {
+        /*Do nothing*/
+    }
+
+}
 
 void Gpio_TogglePin(uint8_t port , uint8_t pin)
 {
