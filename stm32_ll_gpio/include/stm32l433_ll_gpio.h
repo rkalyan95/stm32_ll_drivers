@@ -85,6 +85,12 @@ typedef enum
     ANALOG_INPUT,
 }portpintype_t;
 
+typedef enum
+{
+    LOW,
+    HIGH
+}pininitalstate_t;
+
 typedef struct
 {
     gpioport_t port;
@@ -92,6 +98,7 @@ typedef struct
     portpintype_t pinType;
     gpiopull_t pullconfig;
     gpio_otypeconfig_t outputpushpull;
+    pininitalstate_t initalstate;
     alternatefunction_t alternate_functionality;
 }portpintconfigs_t;
 
@@ -103,4 +110,5 @@ void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs);
 void Gpio_ClearPin(uint8_t port , uint8_t pin);
 void Gpio_SetPin(uint8_t port , uint8_t pin);
 void Gpio_GetPin(uint8_t port , uint8_t pin);
+void Gpio_SetLevel(uint8_t port , uint8_t pin,uint8_t level);
 #endif // STM32L433_LL_GPIO_H

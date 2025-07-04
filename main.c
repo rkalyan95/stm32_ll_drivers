@@ -13,18 +13,16 @@ void main(void)
 
    Rcc_InitSystemClocks();
 
-   Gpio_ConfigPin(&Stm32NucleoConfigsPortB[0]);
-   Gpio_ConfigPin(&Stm32NucleoConfigsPortB[1]);
+   Gpio_ConfigAllPorts();
 
-   Gpio_ClearPin(Stm32NucleoConfigsPortB[0].port,Stm32NucleoConfigsPortB[0].pin);
-   Gpio_ClearPin(Stm32NucleoConfigsPortB[1].port,Stm32NucleoConfigsPortB[1].pin);
-    
    while(1)
     {
-        Gpio_TogglePin(Stm32NucleoConfigsPortB[0].port,Stm32NucleoConfigsPortB[0].pin);
-        Gpio_TogglePin(Stm32NucleoConfigsPortB[1].port,Stm32NucleoConfigsPortB[1].pin);
+        Gpio_TogglePin(led_pin.port,led_pin.pin);
+        Gpio_TogglePin(nucleo_pb0_pin.port,nucleo_pb0_pin.pin);
+        Gpio_TogglePin(logic_pin.port,logic_pin.pin);
         for(uint32_t i=0;i<100000;i++);
     }
 
 
 }
+

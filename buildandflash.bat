@@ -8,6 +8,7 @@ arm-none-eabi-gcc ^
 -I stm32_ll_gpio/include ^
 -I stm32_ll_gpio/src ^
 -g -gdwarf-4 -O0 ^
+-fshort-enums ^
 main.c ^
 startup.c ^
 stm32_ll_rcc/src/stm32l433_ll_rcc_cfg.c ^
@@ -16,5 +17,6 @@ stm32_ll_gpio/src/stm32l433_ll_gpio_cfg.c ^
 stm32_ll_gpio/src/stm32l433_ll_gpio.c ^
 -T linker_script.ld ^
 -o blink.elf ^
+-Wl,-Map=blink.map ^
 -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99
 ::openocd -f interface/stlink.cfg -f target/stm32l4x.cfg -c "program blink.elf verify reset"

@@ -1,7 +1,7 @@
 #include "stm32l433_ll_gpio.h"
 #include "stm32l433_ll_gpio_cfg.h"
 
-GPIO_TypeDef *Gpio_Port;
+
 
 void Gpio_Init(void)
 {
@@ -21,29 +21,29 @@ GPIO_TypeDef *GetPortAddress(uint8_t port)
     switch(port)
     {
         case GPIO_PORT_A:
-            Gpio_Port = ((GPIO_TypeDef *) GPIOA_BASE);
+            return ((GPIO_TypeDef *) GPIOA_BASE);
             break;
         case GPIO_PORT_B:
-            Gpio_Port = ((GPIO_TypeDef *) GPIOB_BASE);
+            return ((GPIO_TypeDef *) GPIOB_BASE);
             break;
         case GPIO_PORT_C:
-            Gpio_Port = ((GPIO_TypeDef *) GPIOC_BASE);
+            return ((GPIO_TypeDef *) GPIOC_BASE);
             break;
         case GPIO_PORT_D:
-            Gpio_Port = ((GPIO_TypeDef *) GPIOD_BASE);
+            return ((GPIO_TypeDef *) GPIOD_BASE);
             break;  
         case GPIO_PORT_E:
-            Gpio_Port = ((GPIO_TypeDef *) GPIOE_BASE);
+            return ((GPIO_TypeDef *) GPIOE_BASE);
             break;
         case GPIO_PORT_H:
-            Gpio_Port = ((GPIO_TypeDef *) GPIOH_BASE);
+            return ((GPIO_TypeDef *) GPIOH_BASE);
             break;
         default:
             // Invalid port, handle error
             return 0; // or assert, or log error
     } 
 
-    return Gpio_Port;
+    
 }
 
 void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs)
@@ -93,6 +93,7 @@ void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs)
 void Gpio_SetPin(uint8_t port , uint8_t pin)
 {
     GPIO_TypeDef *Gpio_Port;
+    Gpio_Port = GetPortAddress(port);
     if(Gpio_Port!=0)
     {
         SET(Gpio_Port->ODR, pin); // Toggle the LED pin
@@ -107,6 +108,7 @@ void Gpio_SetPin(uint8_t port , uint8_t pin)
 void Gpio_ClearPin(uint8_t port , uint8_t pin)
 {
     GPIO_TypeDef *Gpio_Port;
+    Gpio_Port = GetPortAddress(port);
     if(Gpio_Port!=0)
     {
         CLEAR(Gpio_Port->ODR, pin); // Toggle the LED pin
@@ -117,6 +119,22 @@ void Gpio_ClearPin(uint8_t port , uint8_t pin)
     }
 
 }
+
+void Gpio_SetLevel(uint8_t port , uint8_t pin,uint8_t level)
+{
+    switch(level)
+    {
+        case LOW:
+            Gpio_ClearPin(port,pin);
+            break;
+        case HIGH:
+            Gpio_SetPin(port,pin);
+            break;
+        default:
+            return; //maybee log wrong commands
+    }
+}
+
 
 void Gpio_GetPin(uint8_t port ,uint8_t pin)
 {
