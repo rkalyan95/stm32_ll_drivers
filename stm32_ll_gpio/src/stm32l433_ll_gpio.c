@@ -2,44 +2,24 @@
 #include "stm32l433_ll_gpio_cfg.h"
 
 
-
-void Gpio_Init(void)
-{
-    GPIO_TypeDef *GpioB_Configs = ((GPIO_TypeDef *) GPIOB_BASE);
-    GPIO_TypeDef *GpioA_Configs = ((GPIO_TypeDef *) GPIOA_BASE);
-
-    /* 
-    * Copy the configs from local to the hardware registers 
-    */
-    //GpioA_Configs->MODER = GPIOA_MODER_Reg.U;
-   // GpioA_Configs->AFR[1] = GPIOA_AFRH_Reg.U; // Set alternate function for pins 13 and 14
-   // GpioB_Configs->MODER = GPIOB_MODER_Reg.U;
-}
-
-GPIO_TypeDef *GetPortAddress(uint8_t port)
+GPIO_TypeDef *GetPortAddress(const uint8_t port)
 {
     switch(port)
     {
         case GPIO_PORT_A:
             return ((GPIO_TypeDef *) GPIOA_BASE);
-            break;
         case GPIO_PORT_B:
             return ((GPIO_TypeDef *) GPIOB_BASE);
-            break;
         case GPIO_PORT_C:
             return ((GPIO_TypeDef *) GPIOC_BASE);
-            break;
         case GPIO_PORT_D:
             return ((GPIO_TypeDef *) GPIOD_BASE);
-            break;  
         case GPIO_PORT_E:
             return ((GPIO_TypeDef *) GPIOE_BASE);
-            break;
         case GPIO_PORT_H:
             return ((GPIO_TypeDef *) GPIOH_BASE);
-            break;
         default:
-            // Invalid port, handle error
+            // TODO: Log error for invalid port.
             return 0; // or assert, or log error
     } 
 
@@ -50,15 +30,12 @@ void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs)
 {
     uint8_t pinrange;
 
-    GPIO_TypeDef *Gpio_Port;
+    GPIO_TypeDef *Gpio_Port = GetPortAddress(portpinconfigs->port);
 
-    if(portpinconfigs->pin > GPIO_PIN_MAX)
+    if(portpinconfigs->pin > GPIO_PIN_MAX || Gpio_Port == 0)
     {
         return;
     }
-/*Get the port address*/
-
-    Gpio_Port = GetPortAddress(portpinconfigs->port);
 
 /*Configure the mode of the pin*/
 
@@ -66,12 +43,12 @@ void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs)
 
 /* configure the alternate functionality : update the AFRL and AFRH registers */
 
-    if(portpinconfigs->port != AF_NONE)
+    if(portpinconfigs->alternate_functionality != AF_NONE)
     {
         pinrange = (portpinconfigs->pin > GPIO_PIN_7 ? 1 : 0 );
         if(pinrange)
         {
-           SET_BITS(Gpio_Port->AFR[1],((portpinconfigs->pin) << 2),4,portpinconfigs->alternate_functionality);
+           SET_BITS(Gpio_Port->AFR[1],((portpinconfigs->pin-8) << 2),4,portpinconfigs->alternate_functionality);
         }
         else
         {
@@ -80,7 +57,7 @@ void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs)
     }
     else
     {
-        /*Do nothing*/
+        // No alternate function to configure.
     }
 
 /* configure the pull configuration*/
@@ -88,39 +65,42 @@ void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs)
 
 /* config the pushpull/open drain using OT register*/
         SET_BITS(Gpio_Port->OTYPER,(portpinconfigs->pin),1,portpinconfigs->outputpushpull);
+
+/* Configure the output speed */
+    SET_BITS(Gpio_Port->OSPEEDR,((portpinconfigs->pin) << 1),2,portpinconfigs->pin_speed);
+
 }
 
-void Gpio_SetPin(uint8_t port , uint8_t pin)
+void Gpio_SetPin(const uint8_t port , const uint8_t pin)
 {
-    GPIO_TypeDef *Gpio_Port;
-    Gpio_Port = GetPortAddress(port);
+    GPIO_TypeDef *Gpio_Port = GetPortAddress(port);
     if(Gpio_Port!=0)
     {
-        SET(Gpio_Port->ODR, pin); // Toggle the LED pin
+       Gpio_Port->BSRR = (1UL << pin); // Use 1UL for unsigned long literal
     }
     else
     {
-        /*Do nothing*/
+        // Intentionally empty for invalid port
     }
 
 }
 
-void Gpio_ClearPin(uint8_t port , uint8_t pin)
+void Gpio_ClearPin(const uint8_t port , const uint8_t pin)
 {
-    GPIO_TypeDef *Gpio_Port;
-    Gpio_Port = GetPortAddress(port);
+    GPIO_TypeDef *Gpio_Port = GetPortAddress(port);
+
     if(Gpio_Port!=0)
     {
-        CLEAR(Gpio_Port->ODR, pin); // Toggle the LED pin
+       Gpio_Port->BSRR = (1UL << (pin + 16)); // Use 1UL for unsigned long literal
     }
     else
     {
-        /*Do nothing*/
+         // Intentionally empty for invalid port
     }
 
 }
 
-void Gpio_SetLevel(uint8_t port , uint8_t pin,uint8_t level)
+void Gpio_SetLevel(const uint8_t port , const uint8_t pin,const uint8_t level)
 {
     switch(level)
     {
@@ -131,39 +111,26 @@ void Gpio_SetLevel(uint8_t port , uint8_t pin,uint8_t level)
             Gpio_SetPin(port,pin);
             break;
         default:
-            return; //maybee log wrong commands
+            return; // TODO: Log error for invalid level.
     }
 }
 
 
-void Gpio_GetPin(uint8_t port ,uint8_t pin)
+uint8_t Gpio_GetPin(const uint8_t port ,const uint8_t pin)
 {
-    GPIO_TypeDef *Gpio_Port;
+    uint8_t pinLvl;
+
+    GPIO_TypeDef *Gpio_Port = GetPortAddress(port);
     if(Gpio_Port!=0)
     {
-        TOGGLE(Gpio_Port->ODR, pin); // Toggle the LED pin
+        pinLvl = GET(Gpio_Port->IDR, pin); // Toggle the LED pin
     }
     else
     {
-        /*Do nothing*/
+        pinLvl = 0xff;
+        
     }
 
+    return pinLvl;
 }
 
-void Gpio_TogglePin(uint8_t port , uint8_t pin)
-{
-    
-    GPIO_TypeDef *Gpio_Port;
-
-    Gpio_Port = GetPortAddress(port);
-
-    if(Gpio_Port!=0)
-    {
-        TOGGLE(Gpio_Port->ODR, pin); // Toggle the LED pin
-    }
-    else
-    {
-        /*Do nothing*/
-    }
-
-}  

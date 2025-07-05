@@ -8,8 +8,9 @@ const portpintconfigs_t led_pin = {
     .pinType = GPIO_OUTPUT,
     .pullconfig = GPIO_PULL_DOWN,
     .outputpushpull = GPIO_OTYPE_PUSHPULL,
-    .initalstate = HIGH,
+    .initalstate = LOW,
     .alternate_functionality = AF_NONE,
+    .pin_speed = HIGH_SPEED,
 };
 
 const portpintconfigs_t nucleo_pb0_pin = {
@@ -20,6 +21,7 @@ const portpintconfigs_t nucleo_pb0_pin = {
     .outputpushpull = GPIO_OTYPE_PUSHPULL,
     .initalstate = LOW,
     .alternate_functionality = AF_NONE,
+    .pin_speed = HIGH_SPEED,
 };
 
 
@@ -28,10 +30,11 @@ const portpintconfigs_t logic_pin = {
     .port = GPIO_PORT_B,
     .pin = GPIO_PIN_13,
     .pinType = GPIO_OUTPUT,
-    .pullconfig = GPIO_PULL_DOWN,
+    .pullconfig = GPIO_PULL_DOWN, 
     .outputpushpull = GPIO_OTYPE_PUSHPULL,
     .initalstate = LOW,
     .alternate_functionality = AF_NONE,
+    .pin_speed = HIGH_SPEED,
 };
 
 

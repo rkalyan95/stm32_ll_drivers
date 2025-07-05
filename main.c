@@ -7,7 +7,10 @@
 #include "stm32l433_ll_gpio_cfg.h"
 #include "stm32l433_ll_gpio.h"
 
-
+static void delayrndom(void)
+{
+    for(uint32_t i=0;i<100000;i++);
+}
 void main(void)
 {
 
@@ -17,10 +20,10 @@ void main(void)
 
    while(1)
     {
-        Gpio_TogglePin(led_pin.port,led_pin.pin);
-        Gpio_TogglePin(nucleo_pb0_pin.port,nucleo_pb0_pin.pin);
-        Gpio_TogglePin(logic_pin.port,logic_pin.pin);
-        for(uint32_t i=0;i<100000;i++);
+        Gpio_SetLevel(logic_pin.port,logic_pin.pin,HIGH);
+        delayrndom();
+        Gpio_SetLevel(logic_pin.port,logic_pin.pin,LOW);
+        delayrndom();
     }
 
 

@@ -24,7 +24,7 @@ typedef enum
 
 typedef enum
 {
-    GPIO_NO_PULL = 0x0,   // No pull-up or pull-down
+    GPIO_NO_PULL = 0x0,   // No pull-up or pull-d  own
     GPIO_PULL_UP = 0x1, // Pull-up
     GPIO_PULL_DOWN = 0x2 // Pull-down
 }gpiopull_t;
@@ -91,6 +91,14 @@ typedef enum
     HIGH
 }pininitalstate_t;
 
+typedef enum
+{
+    LOW_SPEED,
+    MEDIUM_SPEED,
+    HIGH_SPEED,
+    VERYHIGH_SPEED,
+}pinspeed_t;
+
 typedef struct
 {
     gpioport_t port;
@@ -100,15 +108,14 @@ typedef struct
     gpio_otypeconfig_t outputpushpull;
     pininitalstate_t initalstate;
     alternatefunction_t alternate_functionality;
+    pinspeed_t pin_speed;
 }portpintconfigs_t;
 
 
-void Gpio_Init(void);
-void Gpio_TogglePin(uint8_t port , uint8_t pin);
-GPIO_TypeDef *GetPortAddress(uint8_t port);
+GPIO_TypeDef *GetPortAddress(const uint8_t port);
 void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs);
-void Gpio_ClearPin(uint8_t port , uint8_t pin);
-void Gpio_SetPin(uint8_t port , uint8_t pin);
-void Gpio_GetPin(uint8_t port , uint8_t pin);
-void Gpio_SetLevel(uint8_t port , uint8_t pin,uint8_t level);
+void Gpio_ClearPin(const uint8_t port , const uint8_t pin);
+void Gpio_SetPin(const uint8_t port , const uint8_t pin);
+uint8_t Gpio_GetPin(const uint8_t port ,const uint8_t pin);
+void Gpio_SetLevel(const uint8_t port , const uint8_t pin,const uint8_t level);
 #endif // STM32L433_LL_GPIO_H
