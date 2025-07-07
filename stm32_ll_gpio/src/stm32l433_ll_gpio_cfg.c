@@ -13,15 +13,15 @@ const portpintconfigs_t led_pin = {
     .pin_speed = HIGH_SPEED,
 };
 
-const portpintconfigs_t nucleo_pb0_pin = {
-    .port = GPIO_PORT_B,
-    .pin = GPIO_PIN_0,
-    .pinType = GPIO_OUTPUT,
-    .pullconfig = GPIO_PULL_DOWN,
+const portpintconfigs_t mco_pin = {
+    .port = GPIO_PORT_A,
+    .pin = GPIO_PIN_8,
+    .pinType = ALTERNATE_FUNCTION,
+    .pullconfig = GPIO_NO_PULL,
     .outputpushpull = GPIO_OTYPE_PUSHPULL,
     .initalstate = LOW,
-    .alternate_functionality = AF_NONE,
-    .pin_speed = HIGH_SPEED,
+    .alternate_functionality = AF_0,
+    .pin_speed = VERYHIGH_SPEED,
 };
 
 
@@ -38,7 +38,7 @@ const portpintconfigs_t logic_pin = {
 };
 
 
-const portpintconfigs_t Stm32NucleoConfigsPortB[] = {led_pin,logic_pin,nucleo_pb0_pin};
+const portpintconfigs_t Stm32NucleoConfigsPortB[] = {led_pin,logic_pin,mco_pin};
 
 #define CONFIG_CNT     (sizeof(Stm32NucleoConfigsPortB)/sizeof(Stm32NucleoConfigsPortB[0]))
 

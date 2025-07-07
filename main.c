@@ -21,8 +21,13 @@ void main(void)
    RCC_EnableAhb2Peripheral(AHB2_GPIOD);
    RCC_EnableAhb2Peripheral(AHB2_GPIOE);
    RCC_EnableAhb2Peripheral(AHB2_GPIOH);
-   Gpio_ConfigAllPorts();
 
+   RCC_SetSystemClockSource(SYSCLK_MSI);
+RCC_MsiRangeSelect(MSI_RANGESRC_CR);
+   RCC_ConfigureMCO(MCO_MSI,MCO_DIV1);
+   RCC_EnableMSI(RCC_MSISRANGE_1MHZ_SETTING);
+
+    Gpio_ConfigAllPorts();
    while(1)
     {
         Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);

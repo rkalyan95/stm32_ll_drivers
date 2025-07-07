@@ -149,6 +149,11 @@ typedef enum
 
 typedef enum
 {
+    MSI_RANGESRC_CSR,
+    MSI_RANGESRC_CR
+}RccMsiRngSel_t;
+typedef enum
+{
     RCC_HSE_BYPASS_DISABLED,
     RCC_HSE_BYPASS_ENABLED,
 }RccHseByPass_t;
@@ -412,5 +417,5 @@ void Rcc_EnableLsiCsr(bool LsiCsrEn);
 void Rcc_ConfigureMsiRangeCsr(Rcc_CsrMsiRng_t MsiRange);
 void Rcc_RmVfCsr(bool RmvfEn);
 void Rcc_CrrCrHsi48Enable(bool Hsi48En);
-
+void RCC_MsiRangeSelect(RccMsiRngSel_t RangeSrc);
 #endif

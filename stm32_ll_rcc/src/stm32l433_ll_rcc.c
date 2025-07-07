@@ -8,6 +8,9 @@
 #define SET_BITS(v, p, n, new_val) \
   ((v) = ((v) & ~(((1UL << (n)) - 1) << (p))) | (((new_val) & ((1UL << (n)) - 1)) << (p)))
 
+#define GET_BITS(v, p, n) \
+  (((v) >> (p)) & ((1UL << (n)) - 1))
+
 RCC_TypeDef *RCC_ClockConfigs = ((RCC_TypeDef *) RCC_BASE);
 
 /* RCC_CR Register Starts */
@@ -15,30 +18,44 @@ void RCC_EnableMSI(RccMsiRng_t range)
 {
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_MSIRANGE_Pos,4,range);
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_MSION_Pos,1,1);
+
+    while(GET(RCC_ClockConfigs->CR,RCC_CR_MSIRDY_Pos)!=1);
     /*Will put a whle loop here to check if its enabled?*/
 
 }
+
+void RCC_MsiRangeSelect(RccMsiRngSel_t RangeSrc)
+{
+    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_MSIRGSEL_Pos,1,RangeSrc);
+}
+
+
 void RCC_EnableHSI(bool kernelClock, bool autoStartStop)
 {
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSION_Pos,1,1);
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSIKERON_Pos,1,kernelClock);
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSIASFS_Pos,1,autoStartStop);
+
+    while(GET(RCC_ClockConfigs->CR,RCC_CR_HSIRDY_Pos)!=1);
 }
 
 void RCC_EnableHSE(RccHseByPass_t ByPassSetting,bool ClkSecuSet)
 {
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSEBYP_Pos,1,ByPassSetting);
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_CSSON_Pos,1,ClkSecuSet);
+    while(GET(RCC_ClockConfigs->CR,RCC_CR_HSERDY_Pos)!=1);
 }
 
 void RCC_EnableMainPLL(void)
 {
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_PLLON_Pos,1,1);
+    while(GET(RCC_ClockConfigs->CR,RCC_CR_PLLRDY_Pos)!=1);
 }
 
 void RCC_EnablePLLSAI1(void)
 {
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_PLLSAI1ON_Pos,1,1);
+    while(GET(RCC_ClockConfigs->CR,RCC_CR_PLLSAI1RDY_Pos)!=1);
 }
 
 /*RCC_CR Register Ends*/
@@ -48,6 +65,8 @@ void RCC_EnablePLLSAI1(void)
 void RCC_SetSystemClockSource(RCCSysClkSource_t source)
 {
     SET_BITS(RCC_ClockConfigs->CFGR,RCC_CFGR_SW_Pos,2,source);
+
+    while(GET_BITS(RCC_ClockConfigs->CFGR,RCC_CFGR_SW_Pos,2) != source);
 }
 
 void RCC_SetAHBPrescaler(AhbPrescaler_t prescaler)
@@ -211,31 +230,31 @@ void RCC_ClearClockInterrupt(Rcc_InterruptClock_t ClockType)
     switch(ClockType)
     {
         case RCC_LSIINTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_LSIRDYC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_LSIRDYC_Pos);
             break;
         case RCC_LSEINTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_LSERDYC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_LSERDYC_Pos);
             break;
         case RCC_MSIINTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_MSIRDYC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_MSIRDYC_Pos);
             break;
         case RCC_HSIINTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_HSIRDYC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_HSIRDYC_Pos);
             break;
         case RCC_HSEINTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_HSERDYC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_HSERDYC_Pos);
             break;
         case RCC_PLLINTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_PLLRDYC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_PLLRDYC_Pos);
             break;
         case RCC_PLLSAI1INTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_PLLSAI1RDYC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_PLLSAI1RDYC_Pos);
             break;
         case RCC_LSECSSINTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_LSECSSC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_LSECSSC_Pos);
             break;
         case RCC_HSI48INTR:
-            CLEAR(RCC_ClockConfigs->CICR,RCC_CICR_HSI48RDYC_Pos);
+            SET(RCC_ClockConfigs->CICR,RCC_CICR_HSI48RDYC_Pos);
             break;
         default:
             return;
