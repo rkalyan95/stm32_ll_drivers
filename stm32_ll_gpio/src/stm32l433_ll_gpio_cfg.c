@@ -4,11 +4,11 @@
 
 const portpintconfigs_t led_pin = {
     .port = GPIO_PORT_B,
-    .pin = GPIO_PIN_14,
+    .pin = GPIO_PIN_13,
     .pinType = GPIO_OUTPUT,
     .pullconfig = GPIO_PULL_DOWN,
     .outputpushpull = GPIO_OTYPE_PUSHPULL,
-    .initalstate = LOW,
+    .initalstate = HIGH,
     .alternate_functionality = AF_NONE,
     .pin_speed = HIGH_SPEED,
 };
@@ -28,7 +28,7 @@ const portpintconfigs_t nucleo_pb0_pin = {
 
 const portpintconfigs_t logic_pin = {
     .port = GPIO_PORT_B,
-    .pin = GPIO_PIN_13,
+    .pin = GPIO_PIN_14,
     .pinType = GPIO_OUTPUT,
     .pullconfig = GPIO_PULL_DOWN, 
     .outputpushpull = GPIO_OTYPE_PUSHPULL,
@@ -46,11 +46,13 @@ const portpintconfigs_t Stm32NucleoConfigsPortB[] = {led_pin,logic_pin,nucleo_pb
 
 static void Gpio_InitialiseAllPinsPort(const portpintconfigs_t *configsgpio , uint32_t config_count)
 {
-    //Warning : this config count var must be 32-bit , i need to find a reason why and fix it
-    /*Compiler issue : Aligns with EABI Principles: While EABI defines rules for all integer types, 
-    // using native word sizes for loop counters and significant arithmetic operations generally 
-    // leads to more stable and predictable code, as it avoids potential edge cases or less-optimized 
-    // paths that compilers might have for smaller types when they interact with pointer arithmetic
+    /*Warning : this config count var must be 32-bit , i need to find a reason why and fix it*/
+
+    /*
+    * Compiler issue : Aligns with EABI Principles: While EABI defines rules for all integer types, 
+    * using native word sizes for loop counters and significant arithmetic operations generally 
+    * leads to more stable and predictable code, as it avoids potential edge cases or less-optimized 
+    * paths that compilers might have for smaller types when they interact with pointer arithmetic
     */
     uint32_t cfg_count=0;
 

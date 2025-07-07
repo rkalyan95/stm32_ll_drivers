@@ -11,18 +11,23 @@ static void delayrndom(void)
 {
     for(uint32_t i=0;i<100000;i++);
 }
+
+
 void main(void)
 {
-
-   Rcc_InitSystemClocks();
-
+   RCC_EnableAhb2Peripheral(AHB2_GPIOA);
+   RCC_EnableAhb2Peripheral(AHB2_GPIOB);
+   RCC_EnableAhb2Peripheral(AHB2_GPIOC);
+   RCC_EnableAhb2Peripheral(AHB2_GPIOD);
+   RCC_EnableAhb2Peripheral(AHB2_GPIOE);
+   RCC_EnableAhb2Peripheral(AHB2_GPIOH);
    Gpio_ConfigAllPorts();
 
    while(1)
     {
-        Gpio_SetLevel(logic_pin.port,logic_pin.pin,HIGH);
+        Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);
         delayrndom();
-        Gpio_SetLevel(logic_pin.port,logic_pin.pin,LOW);
+        Gpio_SetLevel(led_pin.port,led_pin.pin,LOW);
         delayrndom();
     }
 
