@@ -1,7 +1,8 @@
 #ifndef STM32L433_LL_RCC_H
 #define STM32L433_LL_RCC_H
 
-#include "stm32l433_ll_rcc_cfg.h"
+#include <stm32l433xx.h> // Device-specific header for register definitions
+
 #include <stdbool.h>
 
 #define MAX_FREQUENCY_AHB   80000000UL
@@ -316,6 +317,7 @@ typedef enum
     CCIPR_SYSCLK,
     CCIPR_HSI16CLK,
     CCIPR_LSECLk,
+    CCIPR_CLKSRCNONE,
 }Rcc_Ccipr_ClockSrc_t;
 
 typedef enum
