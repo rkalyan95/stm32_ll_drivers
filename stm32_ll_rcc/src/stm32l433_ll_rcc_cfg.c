@@ -1,7 +1,27 @@
 
 #include "stm32l433_ll_rcc_cfg.h"
 
-const peripheral_clock_cfg_t peripheral_configs[] = {
+const system_clk_config systemclock[] = 
+{
+    {
+        .SysClkSrc = SYSCLK_MSI,
+        .McoPreScaler = MCO_DIV1,
+        .MsiRngSelection = MSI_RANGESRC_CR,
+        .MsiRange = RCC_MSISRANGE_4MHZ_SETTING,
+        .McoOutClk = MCO_MSI
+    }
+};
+
+const peripheral_clk_settings peripheralclk[] =
+{
+    {
+        .AhbDiv = APB1_HCLK_NODIV,
+        .Apb1Div = APB2_HCLK_NODIV,
+        .Apb2Div = AHB_SYSCLK_NODIV
+    }
+};
+
+ const peripheral_clock_cfg_t peripheral_configs[] = {
     {
         .peripheral_cat = PERIPHERAL_CAT_AHB2,
         .peripheral_id.ahb2_id = AHB2_GPIOA,
@@ -36,6 +56,10 @@ const peripheral_clock_cfg_t peripheral_configs[] = {
 };
 
 #define CLOCK_CONFIG_CNT      (sizeof(peripheral_configs)/sizeof(peripheral_configs[0]))
+
+#define SYSCLOCK_CONFIG_CNT      (sizeof(systemclock)/sizeof(systemclock[0]))
+
+#define PERIPHERAL_CLOCK_CONFIG_CNT      (sizeof(peripheralclk)/sizeof(peripheralclk[0]))
 
 
 static void ApplyClockConfiguration(const peripheral_clock_cfg_t* config)
@@ -73,6 +97,18 @@ static void ApplyClockConfiguration(const peripheral_clock_cfg_t* config)
     }
 }
 
+
+static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
+{
+    for (uint32_t i = 0; i < SYSCLOCK_CONFIG_CNT; i++)
+    {
+        RCC_SetSystemClockSource(sysclockconfig->SysClkSrc);
+        RCC_MsiRangeSelect(sysclockconfig->MsiRngSelection);
+        RCC_ConfigureMCO(sysclockconfig->McoOutClk,sysclockconfig->McoPreScaler);
+        RCC_EnableMSI(sysclockconfig->MsiRange);        
+    }
+}
+
 /**
  * @brief Initializes all peripheral clocks defined in peripheral_configs array.
  *
@@ -81,12 +117,18 @@ static void ApplyClockConfiguration(const peripheral_clock_cfg_t* config)
  *
  * @param None
  */
-void InitializeAllPeripheralsClocks(void)
+static void InitializeAllPeripheralsClocks(void)
 {
 
     for (uint32_t i = 0; i < CLOCK_CONFIG_CNT; i++)
     {
         ApplyClockConfiguration(&peripheral_configs[i]);
     }
+}
+
+void InitAllClocks(void)
+{
+    InitializeAllPeripheralsClocks();
+    InitSysClockConfigurtion(systemclock);
 }
 

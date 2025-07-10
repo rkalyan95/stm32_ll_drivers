@@ -58,6 +58,7 @@ void RCC_EnablePLLSAI1(void)
     while(GET(RCC_ClockConfigs->CR,RCC_CR_PLLSAI1RDY_Pos)!=1);
 }
 
+
 /*RCC_CR Register Ends*/
 
 /* RCC_CFGR Register Starts */

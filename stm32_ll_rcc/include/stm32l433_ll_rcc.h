@@ -365,6 +365,7 @@ typedef enum
 }Rcc_CsrMsiRng_t;
 
 
+
 void RCC_EnableMSI(RccMsiRng_t range);
 void RCC_EnableHSI(bool kernelClock, bool autoStartStop);
 void RCC_EnableHSE(RccHseByPass_t ByPassSetting,bool ClkSecuSet);

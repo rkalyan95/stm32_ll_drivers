@@ -15,22 +15,10 @@ static void delayrndom(void)
 
 void main(void)
 {
-   /*
-   RCC_EnableAhb2Peripheral(AHB2_GPIOA);
-   RCC_EnableAhb2Peripheral(AHB2_GPIOB);
-   RCC_EnableAhb2Peripheral(AHB2_GPIOC);
-   RCC_EnableAhb2Peripheral(AHB2_GPIOD);
-   RCC_EnableAhb2Peripheral(AHB2_GPIOE);
-   RCC_EnableAhb2Peripheral(AHB2_GPIOH);
-*/
-   InitializeAllPeripheralsClocks();
 
-   RCC_SetSystemClockSource(SYSCLK_MSI);
-   RCC_MsiRangeSelect(MSI_RANGESRC_CR);
-   RCC_ConfigureMCO(MCO_MSI,MCO_DIV1);
-   RCC_EnableMSI(RCC_MSISRANGE_4MHZ_SETTING);
+    InitAllClocks();
+   Gpio_ConfigAllPorts();
 
-    Gpio_ConfigAllPorts();
    while(1)
     {
         Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);

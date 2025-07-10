@@ -18,6 +18,24 @@ typedef enum
 } PeripheralCategory_t;
 
 
+typedef struct 
+{
+    RCCSysClkSource_t SysClkSrc;
+    RccMsiRngSel_t MsiRngSelection;
+    RccMcoSource_t McoOutClk;
+    RccMcoPrescaler_t McoPreScaler;
+    RccMsiRng_t MsiRange;
+
+}system_clk_config;
+
+typedef struct 
+{
+    Apb1Prescaler_t Apb1Div;
+    Apb2Prescaler_t Apb2Div;
+    AhbPrescaler_t  AhbDiv;
+}peripheral_clk_settings;
+
+
 typedef union
 {
     Rcc_Ahb1Peripheral_t ahb1_id;
@@ -41,6 +59,6 @@ typedef struct
 
 
 
-void InitializeAllPeripheralsClocks(void);
+void InitAllClocks(void);
 
 #endif // STM32L433_LL_CFG_H
