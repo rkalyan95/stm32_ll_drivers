@@ -11,6 +11,13 @@
 
 typedef enum
 {
+    ERR_FAILED,
+    ERR_SUCCESS,
+    ERR_TIMEOUT,
+}Error_t;
+
+typedef enum
+{
     MSI_RC,
     HSI_RC,
     HSE_RC,
@@ -374,59 +381,59 @@ typedef enum
 
 
 
-void RCC_EnableMSI(RccMsiRng_t range,bool En);
-void RCC_EnableHSI(bool kernelClock, bool autoStartStop,bool En);
-void RCC_EnableHSE(RccHseByPass_t ByPassSetting,bool ClkSecuSet,bool En);
-void RCC_EnableMainPLL(bool En);
-void RCC_EnablePLLSAI1(bool En);
-void RCC_SetSystemClockSource(RCCSysClkSource_t source);
-void RCC_SetAHBPrescaler(AhbPrescaler_t prescaler);
-void RCC_SetAPB1Prescaler(Apb1Prescaler_t prescaler);
-void RCC_SetAPB2Prescaler(Apb1Prescaler_t prescaler);
-void RCC_ConfigureMCO(RccMcoSource_t source, RccMcoPrescaler_t prescaler);
-void RCC_ConfigurePllSrc(RccPllSrc_t PllSrc);
-void RCC_ConfigurePllSettings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR,uint8_t RccPllN, uint8_t RccPllDiv);
-void RCC_EnablePllR(bool En);
-void RCC_EnablePllQ(bool En);
-void RCC_EnablePllP(bool En);
-void RCC_ConfigurePllSai1Settings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR,uint8_t RccPllSai1N, uint8_t RccPllSai1Div);
-void RCC_EnablePllSai1R(bool En);
-void RCC_EnablePllSai1Q(bool En);
-void RCC_EnablePllSai1P(bool En);
-void RCC_EnableInterrupt(Rcc_InterruptClock_t ClockType);
+Error_t RCC_EnableMSI(RccMsiRng_t range,bool En);
+Error_t RCC_EnableHSI(bool kernelClock, bool autoStartStop,bool En);
+Error_t RCC_EnableHSE(RccHseByPass_t ByPassSetting,bool ClkSecuSet,bool En);
+Error_t RCC_EnableMainPLL(bool En);
+Error_t RCC_EnablePLLSAI1(bool En);
+Error_t RCC_SetSystemClockSource(RCCSysClkSource_t source);
+Error_t RCC_SetAHBPrescaler(AhbPrescaler_t prescaler);
+Error_t RCC_SetAPB1Prescaler(Apb1Prescaler_t prescaler);
+Error_t RCC_SetAPB2Prescaler(Apb1Prescaler_t prescaler);
+Error_t RCC_ConfigureMCO(RccMcoSource_t source, RccMcoPrescaler_t prescaler);
+Error_t RCC_ConfigurePllSrc(RccPllSrc_t PllSrc);
+Error_t RCC_ConfigurePllSettings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR,uint8_t RccPllN, uint8_t RccPllDiv);
+Error_t RCC_EnablePllR(bool En);
+Error_t RCC_EnablePllQ(bool En);
+Error_t RCC_EnablePllP(bool En);
+Error_t RCC_ConfigurePllSai1Settings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR,uint8_t RccPllSai1N, uint8_t RccPllSai1Div);
+Error_t RCC_EnablePllSai1R(bool En);
+Error_t RCC_EnablePllSai1Q(bool En);
+Error_t RCC_EnablePllSai1P(bool En);
+Error_t RCC_EnableInterrupt(Rcc_InterruptClock_t ClockType);
 bool RCC_GetClockInterrupt(Rcc_InterruptClock_t ClockType);
-void RCC_ClearClockInterrupt(Rcc_InterruptClock_t ClockType);
+Error_t RCC_ClearClockInterrupt(Rcc_InterruptClock_t ClockType);
 void RCC_ResetAhb1Peripheral(Rcc_Ahb1Peripheral_t peripheral);
 void RCC_ResetAhb2Peripheral(Rcc_Ahb2Peripheral_t peripheral);
 void RCC_ResetAhb3Peripheral(Rcc_Ahb3Peripheral_t peripheral);
 void RCC_ResetApb1Peripheral1(Rcc_Apb1Peripheral1_t peripheral);
 void RCC_ResetApb1Peripheral2(Rcc_Apb1Peripheral2_t peripheral);
 void RCC_ResetApb2Peripheral(Rcc_Apb2Peripheral_t peripheral);
-void RCC_EnableAhb1Peripheral(Rcc_Ahb1Peripheral_t peripheral);
-void RCC_EnableAhb2Peripheral(Rcc_Ahb2Peripheral_t peripheral);
-void RCC_EnableAhb3Peripheral(Rcc_Ahb3Peripheral_t peripheral);
-void RCC_EnableApb1Peripheral1(Rcc_Apb1Peripheral1_t peripheral);
-void RCC_EnableApb1Peripheral2(Rcc_Apb1Peripheral2_t peripheral);
-void RCC_EnableApb2Peripheral(Rcc_Apb2Peripheral_t peripheral);
-void RCC_EnableDuringSleepAhb1Peripheral(Rcc_Ahb1Peripheral_t peripheral,bool SleepEn);
-void RCC_EnableDuringSleepAhb2Peripheral(Rcc_Ahb2Peripheral_t peripheral,bool SleepEn);
-void RCC_EnableDuringSleepAhb3Peripheral(Rcc_Ahb3Peripheral_t peripheral,bool SleepEn);
-void RCC_EnableDuringSleepApb1Peripheral1(Rcc_Apb1Peripheral1_t peripheral,bool SleepEn);
-void RCC_EnableDuringSleepApb1Peripheral2(Rcc_Apb1Peripheral2_t peripheral,bool SleepEn);
-void RCC_EnableDuringSleepApb2Peripheral(Rcc_Apb2Peripheral_t peripheral,bool SleepEn);
-void RCC_ConfigureCciprClocks(Rcc_CciprPeripheral_t peripheral , Rcc_Ccipr_ClockSrc_t src);
-void RCC_BdcrEnableLse(bool BdcrLseEn);
-void RCC_BdcrConfigureLseByp(bool BypEn);
-void RCC_BdcrConfigureLseSpeed(Rcc_Bdcr_LseSpeed_t spd);
-void RCC_BdcrLseCssConfigure(bool LseCssEn);
-void Rcc_BdcrConfigureRtcSource(Rcc_Bdcr_RtcSource_t src);
-void Rcc_BdcrConfigureRtcClk(bool RtcClkEn);
-void Rcc_BdcrConfigureBdRst(bool BdRst);
-void Rcc_ConfigureLscoEn(bool LscoEn);
-void Rcc_ConfigureLseSel(bool LseSel);
-void Rcc_EnableLsiCsr(bool LsiCsrEn);
-void Rcc_ConfigureMsiRangeCsr(Rcc_CsrMsiRng_t MsiRange);
-void Rcc_RmVfCsr(bool RmvfEn);
-void Rcc_CrrCrHsi48Enable(bool Hsi48En);
-void RCC_MsiRangeSelect(RccMsiRngSel_t RangeSrc);
+Error_t RCC_EnableAhb1Peripheral(Rcc_Ahb1Peripheral_t peripheral);
+Error_t RCC_EnableAhb2Peripheral(Rcc_Ahb2Peripheral_t peripheral);
+Error_t RCC_EnableAhb3Peripheral(Rcc_Ahb3Peripheral_t peripheral);
+Error_t RCC_EnableApb1Peripheral1(Rcc_Apb1Peripheral1_t peripheral);
+Error_t RCC_EnableApb1Peripheral2(Rcc_Apb1Peripheral2_t peripheral);
+Error_t RCC_EnableApb2Peripheral(Rcc_Apb2Peripheral_t peripheral);
+Error_t RCC_EnableDuringSleepAhb1Peripheral(Rcc_Ahb1Peripheral_t peripheral,bool SleepEn);
+Error_t RCC_EnableDuringSleepAhb2Peripheral(Rcc_Ahb2Peripheral_t peripheral,bool SleepEn);
+Error_t RCC_EnableDuringSleepAhb3Peripheral(Rcc_Ahb3Peripheral_t peripheral,bool SleepEn);
+Error_t RCC_EnableDuringSleepApb1Peripheral1(Rcc_Apb1Peripheral1_t peripheral,bool SleepEn);
+Error_t RCC_EnableDuringSleepApb1Peripheral2(Rcc_Apb1Peripheral2_t peripheral,bool SleepEn);
+Error_t RCC_EnableDuringSleepApb2Peripheral(Rcc_Apb2Peripheral_t peripheral,bool SleepEn);
+Error_t RCC_ConfigureCciprClocks(Rcc_CciprPeripheral_t peripheral , Rcc_Ccipr_ClockSrc_t src);
+Error_t RCC_BdcrEnableLse(bool BdcrLseEn);
+Error_t RCC_BdcrConfigureLseByp(bool BypEn);
+Error_t RCC_BdcrConfigureLseSpeed(Rcc_Bdcr_LseSpeed_t spd);
+Error_t RCC_BdcrLseCssConfigure(bool LseCssEn);
+Error_t Rcc_BdcrConfigureRtcSource(Rcc_Bdcr_RtcSource_t src);
+Error_t Rcc_BdcrConfigureRtcClk(bool RtcClkEn);
+Error_t Rcc_BdcrConfigureBdRst(bool BdRst);
+Error_t Rcc_ConfigureLscoEn(bool LscoEn);
+Error_t Rcc_ConfigureLseSel(bool LseSel);
+Error_t Rcc_EnableLsiCsr(bool LsiCsrEn);
+Error_t Rcc_ConfigureMsiRangeCsr(Rcc_CsrMsiRng_t MsiRange);
+Error_t Rcc_RmVfCsr(bool RmvfEn);
+Error_t Rcc_CrrCrHsi48Enable(bool Hsi48En);
+Error_t RCC_MsiRangeSelect(RccMsiRngSel_t RangeSrc);
 #endif

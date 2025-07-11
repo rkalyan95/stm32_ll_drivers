@@ -121,6 +121,6 @@ typedef struct
 
 
 
-void InitAllClocks(void);
+Error_t InitAllClocks(void);
 
 #endif // STM32L433_LL_CFG_H

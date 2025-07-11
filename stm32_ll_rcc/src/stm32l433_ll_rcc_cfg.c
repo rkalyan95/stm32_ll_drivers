@@ -18,10 +18,10 @@ const system_clk_config systemclock =
 
         .HsiSettings.hsiautostart = 1,
         .HsiSettings.hsikernelon = 1,
-        .HsiSettings.hsienabled = 1,
+        .HsiSettings.hsienabled = 0,
 
         .PllSettings.pllsrc = PLL_PLL_MSICLK,
-        .PllSettings.pllenabled = 1,
+        .PllSettings.pllenabled = 0,
         .PllSettings.pllpenabled = 1,
         .PllSettings.pllqenabled = 1,
         .PllSettings.pllrenabled = 1,
@@ -33,7 +33,7 @@ const system_clk_config systemclock =
         .PllSettings.pllm = RCC_PLL_M_1,
 
 
-        .PllSai1Settings.pllsai1enabled = 1,
+        .PllSai1Settings.pllsai1enabled = 0,
         .PllSai1Settings.pllsai1penabled = 1,
         .PllSai1Settings.pllsai1qenabled = 1,
         .PllSai1Settings.pllsai1renabled = 1,
@@ -46,13 +46,13 @@ const system_clk_config systemclock =
 
 };
 
-const peripheral_clk_settings peripheralclk[] =
+const peripheral_clk_settings peripheralclk=
 {
-    {
-        .AhbDiv = APB1_HCLK_NODIV,
-        .Apb1Div = APB2_HCLK_NODIV,
-        .Apb2Div = AHB_SYSCLK_NODIV
-    }
+
+    .AhbDiv = AHB_SYSCLK_NODIV,
+    .Apb1Div = APB1_HCLK_NODIV,
+    .Apb2Div = APB2_HCLK_NODIV
+
 };
 
  const peripheral_clock_cfg_t peripheral_configs[] = {
@@ -91,35 +91,34 @@ const peripheral_clk_settings peripheralclk[] =
 
 #define CLOCK_CONFIG_CNT      (sizeof(peripheral_configs)/sizeof(peripheral_configs[0]))
 
-#define SYSCLOCK_CONFIG_CNT      (sizeof(systemclock)/sizeof(systemclock[0]))
-
-#define PERIPHERAL_CLOCK_CONFIG_CNT      (sizeof(peripheralclk)/sizeof(peripheralclk[0]))
 
 
-static void ApplyClockConfiguration(const peripheral_clock_cfg_t* config)
+static Error_t ApplyClockConfiguration(const peripheral_clock_cfg_t* config)
 {
+    Error_t RetCode;
+
     switch (config->peripheral_cat)
     {
         case PERIPHERAL_CAT_AHB1:
-            RCC_EnableAhb1Peripheral(config->peripheral_id.ahb1_id);
+            RetCode = RCC_EnableAhb1Peripheral(config->peripheral_id.ahb1_id);
             break;
         case PERIPHERAL_CAT_AHB2:
-            RCC_EnableAhb2Peripheral(config->peripheral_id.ahb2_id);
+            RetCode = RCC_EnableAhb2Peripheral(config->peripheral_id.ahb2_id);
             break;
         case PERIPHERAL_CAT_AHB3:
-            RCC_EnableAhb3Peripheral(config->peripheral_id.ahb3_id);
+            RetCode = RCC_EnableAhb3Peripheral(config->peripheral_id.ahb3_id);
             break;
         case PERIPHERAL_CAT_APB1P1:
-            RCC_EnableApb1Peripheral1(config->peripheral_id.apb1p1_id);
+            RetCode = RCC_EnableApb1Peripheral1(config->peripheral_id.apb1p1_id);
             break;
         case PERIPHERAL_CAT_APB1P2:
-            RCC_EnableApb1Peripheral2(config->peripheral_id.apb1p2_id);
+            RetCode = RCC_EnableApb1Peripheral2(config->peripheral_id.apb1p2_id);
             break;
         case PERIPHERAL_CAT_APB2:
-            RCC_EnableApb2Peripheral(config->peripheral_id.apb2_id);
+            RetCode = RCC_EnableApb2Peripheral(config->peripheral_id.apb2_id);
             break;
         case PERIPHERAL_CAT_CCIPR:
-            RCC_ConfigureCciprClocks(config->peripheral_id.ccipr_id, config->peripheral_clksrc);
+            RetCode = RCC_ConfigureCciprClocks(config->peripheral_id.ccipr_id, config->peripheral_clksrc);
             break;
         case PERIPHERAL_CAT_NONE:
             // This category can be used to mark ignored entries or end of a list if needed.
@@ -129,18 +128,20 @@ static void ApplyClockConfiguration(const peripheral_clock_cfg_t* config)
             // Consider adding a robust error handling mechanism here for production code.
             break;
     }
+
+    return RetCode;
 }
 
 
 
-static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
+static Error_t InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
 {
-
-    RCC_SetSystemClockSource(sysclockconfig->SysClkSrc);
+    Error_t RetCode;
+    RetCode = RCC_SetSystemClockSource(sysclockconfig->SysClkSrc);
     if(sysclockconfig->MsiSettings.msienabled)
     {
-        RCC_MsiRangeSelect(sysclockconfig->MsiSettings.MsiRngSelection);
-        RCC_EnableMSI(sysclockconfig->MsiSettings.MsiRange,sysclockconfig->MsiSettings.msienabled);    
+        RetCode = RCC_MsiRangeSelect(sysclockconfig->MsiSettings.MsiRngSelection);
+        RetCode = RCC_EnableMSI(sysclockconfig->MsiSettings.MsiRange,sysclockconfig->MsiSettings.msienabled);    
     }
     else
     {
@@ -149,7 +150,7 @@ static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
 
     if(sysclockconfig->HsiSettings.hsienabled)
     {
-        RCC_EnableHSI(sysclockconfig->HsiSettings.hsikernelon,sysclockconfig->HsiSettings.hsiautostart,sysclockconfig->HsiSettings.hsienabled);
+        RetCode = RCC_EnableHSI(sysclockconfig->HsiSettings.hsikernelon,sysclockconfig->HsiSettings.hsiautostart,sysclockconfig->HsiSettings.hsienabled);
     }
     else
     {
@@ -158,7 +159,7 @@ static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
 
     if(sysclockconfig->HseSettings.hseenabled)
     {
-        RCC_EnableHSE(sysclockconfig->HseSettings.hsebypassenl,sysclockconfig->HseSettings.hsecssenl,sysclockconfig->HseSettings.hseenabled);
+        RetCode = RCC_EnableHSE(sysclockconfig->HseSettings.hsebypassenl,sysclockconfig->HseSettings.hsecssenl,sysclockconfig->HseSettings.hseenabled);
     }
     else
     {
@@ -167,11 +168,11 @@ static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
 
     if(sysclockconfig->PllSettings.pllenabled)
     {
-        RCC_ConfigurePllSrc(sysclockconfig->PllSettings.pllsrc);
-        RCC_ConfigurePllSettings(sysclockconfig->PllSettings.pllm,sysclockconfig->PllSettings.pllp,sysclockconfig->PllSettings.pllq,sysclockconfig->PllSettings.pllr,sysclockconfig->PllSettings.plln,sysclockconfig->PllSettings.plldiv);
-        RCC_EnablePllR(sysclockconfig->PllSettings.pllrenabled);
-        RCC_EnablePllQ(sysclockconfig->PllSettings.pllqenabled);
-        RCC_EnablePllP(sysclockconfig->PllSettings.pllpenabled);
+        RetCode = RCC_ConfigurePllSrc(sysclockconfig->PllSettings.pllsrc);
+        RetCode = RCC_ConfigurePllSettings(sysclockconfig->PllSettings.pllm,sysclockconfig->PllSettings.pllp,sysclockconfig->PllSettings.pllq,sysclockconfig->PllSettings.pllr,sysclockconfig->PllSettings.plln,sysclockconfig->PllSettings.plldiv);
+        RetCode = RCC_EnablePllR(sysclockconfig->PllSettings.pllrenabled);
+        RetCode = RCC_EnablePllQ(sysclockconfig->PllSettings.pllqenabled);
+        RetCode = RCC_EnablePllP(sysclockconfig->PllSettings.pllpenabled);
     }
 
     else
@@ -181,18 +182,21 @@ static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
     
     if(sysclockconfig->PllSai1Settings.pllsai1enabled)
     {
-        RCC_ConfigurePllSai1Settings(sysclockconfig->PllSai1Settings.pllsai1m,sysclockconfig->PllSai1Settings.pllsai1p,sysclockconfig->PllSai1Settings.pllsai1q,sysclockconfig->PllSai1Settings.pllsai1r,sysclockconfig->PllSai1Settings.pllsai1n,sysclockconfig->PllSai1Settings.pllsai1div);
-        RCC_EnablePllSai1R(sysclockconfig->PllSai1Settings.pllsai1renabled);
-        RCC_EnablePllSai1Q(sysclockconfig->PllSai1Settings.pllsai1qenabled);
-        RCC_EnablePllSai1P(sysclockconfig->PllSai1Settings.pllsai1penabled);
+        RetCode = RCC_ConfigurePllSai1Settings(sysclockconfig->PllSai1Settings.pllsai1m,sysclockconfig->PllSai1Settings.pllsai1p,sysclockconfig->PllSai1Settings.pllsai1q,sysclockconfig->PllSai1Settings.pllsai1r,sysclockconfig->PllSai1Settings.pllsai1n,sysclockconfig->PllSai1Settings.pllsai1div);
+        RetCode = RCC_EnablePllSai1R(sysclockconfig->PllSai1Settings.pllsai1renabled);
+        RetCode = RCC_EnablePllSai1Q(sysclockconfig->PllSai1Settings.pllsai1qenabled);
+        RetCode = RCC_EnablePllSai1P(sysclockconfig->PllSai1Settings.pllsai1penabled);
     }
 
     else
     {
         /*Do nothing*/
     }
-    RCC_ConfigureMCO(sysclockconfig->McoSettings.McoOutClk,sysclockconfig->McoSettings.McoPreScaler);
+    RetCode = RCC_ConfigureMCO(sysclockconfig->McoSettings.McoOutClk,sysclockconfig->McoSettings.McoPreScaler);
         
+    RetCode = RCC_SetAHBPrescaler(peripheralclk.AhbDiv);
+    RetCode = RCC_SetAPB1Prescaler(peripheralclk.Apb1Div);
+    RetCode = RCC_SetAPB2Prescaler(peripheralclk.Apb2Div);
 
 }
 
@@ -205,18 +209,23 @@ static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
  * @param None
  * */
 
-static void InitializeAllPeripheralsClocks(void)
+static Error_t InitializeAllPeripheralsClocks(void)
 {
-
+    Error_t RetCode;
     for (uint32_t i = 0; i < CLOCK_CONFIG_CNT; i++)
     {
-        ApplyClockConfiguration(&peripheral_configs[i]);
+        RetCode = ApplyClockConfiguration(&peripheral_configs[i]);
     }
+
+    return RetCode;
 }
 
-void InitAllClocks(void)
+Error_t InitAllClocks(void)
 {
-    InitializeAllPeripheralsClocks();
-    InitSysClockConfigurtion(&systemclock);
+    Error_t RetCode;
+    RetCode = InitializeAllPeripheralsClocks();
+    RetCode = InitSysClockConfigurtion(&systemclock);
+
+    return RetCode;
 }
 
