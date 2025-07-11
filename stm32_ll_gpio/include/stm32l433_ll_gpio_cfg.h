@@ -7,7 +7,7 @@
 
 #define MAX_PIN_CONFIGS    16
 
-extern const portpintconfigs_t logic_pin;
+extern const portpintconfigs_t button_pin;
 extern const portpintconfigs_t nucleo_pb0_pin;
 extern const portpintconfigs_t led_pin;
 

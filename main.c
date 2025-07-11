@@ -7,24 +7,37 @@
 #include "stm32l433_ll_gpio_cfg.h"
 #include "stm32l433_ll_gpio.h"
 
-static void delayrndom(void)
+static void delayrndom(uint32_t dly)
 {
-    for(uint32_t i=0;i<100000;i++);
+    for(uint32_t i=0;i<dly;i++)
+    {
+        __NOP();
+    }
 }
 
 
 void main(void)
 {
 
-    InitAllClocks();
-   Gpio_ConfigAllPorts();
+    if(InitAllClocks())
+    {
+        Gpio_ConfigAllPorts();
+    }
 
    while(1)
     {
-        Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);
-        delayrndom();
-        Gpio_SetLevel(led_pin.port,led_pin.pin,LOW);
-        delayrndom();
+        if(Gpio_GetPin(button_pin.port,button_pin.pin))
+        {
+            Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);
+        }
+        else
+        {
+            Gpio_SetLevel(led_pin.port,led_pin.pin,LOW);
+        }
+       // delayrndom(80000);
+        
+       // delayrndom(80000);
+    
     }
 
 

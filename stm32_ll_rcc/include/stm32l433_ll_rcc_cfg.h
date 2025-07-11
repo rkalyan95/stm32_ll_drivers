@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include "stm32l433_ll_rcc.h"
 
+#define ENABLED   1U
+#define DISABLED  0U
+
+
 typedef enum
 {
     PERIPHERAL_CAT_NONE = 0, // Default/invalid

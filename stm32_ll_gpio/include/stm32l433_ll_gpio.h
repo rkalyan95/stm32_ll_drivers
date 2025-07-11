@@ -3,7 +3,7 @@
 
 #define LED_PIN 13
 
-#define GET(x,pos)   ((x && 1<<pos) >> pos)
+#define GET(x,pos)   ((x & 1<<pos) >> pos)
 #define SET(x,pos)   (x |= (1<<pos))
 #define CLEAR(x,pos)   (x &= ~(1<<pos))
 #define TOGGLE(x,pos) (x ^= 1<<pos)

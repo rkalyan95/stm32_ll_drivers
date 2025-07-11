@@ -7,24 +7,24 @@ const system_clk_config systemclock =
 
         .MsiSettings.MsiRngSelection = MSI_RANGESRC_CR,
         .MsiSettings.MsiRange = RCC_MSISRANGE_4MHZ_SETTING,
-        .MsiSettings.msienabled = 1,
+        .MsiSettings.msienabled = ENABLED,
 
         .McoSettings.McoPreScaler = MCO_DIV1,
         .McoSettings.McoOutClk = MCO_SYSCLK,
 
-        .HseSettings.hsebypassenl = 1,
-        .HseSettings.hsecssenl = 1,
-        .HseSettings.hseenabled = 0,
+        .HseSettings.hsebypassenl = ENABLED,
+        .HseSettings.hsecssenl = ENABLED,
+        .HseSettings.hseenabled = DISABLED,
 
-        .HsiSettings.hsiautostart = 1,
-        .HsiSettings.hsikernelon = 1,
-        .HsiSettings.hsienabled = 0,
+        .HsiSettings.hsiautostart = ENABLED,
+        .HsiSettings.hsikernelon = ENABLED,
+        .HsiSettings.hsienabled = DISABLED,
 
         .PllSettings.pllsrc = PLL_PLL_MSICLK,
-        .PllSettings.pllenabled = 0,
-        .PllSettings.pllpenabled = 1,
-        .PllSettings.pllqenabled = 1,
-        .PllSettings.pllrenabled = 1,
+        .PllSettings.pllenabled = DISABLED,
+        .PllSettings.pllpenabled = ENABLED,
+        .PllSettings.pllqenabled = ENABLED,
+        .PllSettings.pllrenabled = ENABLED,
         .PllSettings.plldiv = 0,
         .PllSettings.pllr = RCC_PLLR_2,
         .PllSettings.pllq = RCC_PLLQ_2,
@@ -33,10 +33,10 @@ const system_clk_config systemclock =
         .PllSettings.pllm = RCC_PLL_M_1,
 
 
-        .PllSai1Settings.pllsai1enabled = 0,
-        .PllSai1Settings.pllsai1penabled = 1,
-        .PllSai1Settings.pllsai1qenabled = 1,
-        .PllSai1Settings.pllsai1renabled = 1,
+        .PllSai1Settings.pllsai1enabled = DISABLED,
+        .PllSai1Settings.pllsai1penabled = ENABLED,
+        .PllSai1Settings.pllsai1qenabled = ENABLED,
+        .PllSai1Settings.pllsai1renabled = ENABLED,
         .PllSai1Settings.pllsai1div = 0,
         .PllSai1Settings.pllsai1r = RCC_PLLR_2,
         .PllSai1Settings.pllsai1q = RCC_PLLQ_2,
@@ -200,14 +200,7 @@ static Error_t InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
 
 }
 
-/**
- * @brief Initializes all peripheral clocks defined in peripheral_configs array.
- *
- * Iterates through the global `peripheral_configs` array and applies
- * each configuration using `ApplyClockConfiguration`.
- *
- * @param None
- * */
+
 
 static Error_t InitializeAllPeripheralsClocks(void)
 {
@@ -220,6 +213,17 @@ static Error_t InitializeAllPeripheralsClocks(void)
     return RetCode;
 }
 
+
+/**
+ * @brief Initializes all necessary clocks for the system.
+ *
+ * This function configures and enables all required clock sources and
+ * peripherals for proper system operation. It should be called during
+ * system startup to ensure that all clocks are set up according to
+ * the application's requirements.
+ *
+ * @return Error_t Returns an error code indicating the success or failure of the clock initialization.
+ */
 Error_t InitAllClocks(void)
 {
     Error_t RetCode;
