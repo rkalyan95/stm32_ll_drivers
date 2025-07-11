@@ -1,15 +1,49 @@
 
 #include "stm32l433_ll_rcc_cfg.h"
 
-const system_clk_config systemclock[] = 
+const system_clk_config systemclock = 
 {
-    {
         .SysClkSrc = SYSCLK_MSI,
-        .McoPreScaler = MCO_DIV1,
-        .MsiRngSelection = MSI_RANGESRC_CR,
-        .MsiRange = RCC_MSISRANGE_4MHZ_SETTING,
-        .McoOutClk = MCO_MSI
-    }
+
+        .MsiSettings.MsiRngSelection = MSI_RANGESRC_CR,
+        .MsiSettings.MsiRange = RCC_MSISRANGE_4MHZ_SETTING,
+        .MsiSettings.msienabled = 1,
+
+        .McoSettings.McoPreScaler = MCO_DIV1,
+        .McoSettings.McoOutClk = MCO_SYSCLK,
+
+        .HseSettings.hsebypassenl = 1,
+        .HseSettings.hsecssenl = 1,
+        .HseSettings.hseenabled = 0,
+
+        .HsiSettings.hsiautostart = 1,
+        .HsiSettings.hsikernelon = 1,
+        .HsiSettings.hsienabled = 1,
+
+        .PllSettings.pllsrc = PLL_PLL_MSICLK,
+        .PllSettings.pllenabled = 1,
+        .PllSettings.pllpenabled = 1,
+        .PllSettings.pllqenabled = 1,
+        .PllSettings.pllrenabled = 1,
+        .PllSettings.plldiv = 0,
+        .PllSettings.pllr = RCC_PLLR_2,
+        .PllSettings.pllq = RCC_PLLQ_2,
+        .PllSettings.pllp = RCC_PLLP_7,
+        .PllSettings.plln = 8,
+        .PllSettings.pllm = RCC_PLL_M_1,
+
+
+        .PllSai1Settings.pllsai1enabled = 1,
+        .PllSai1Settings.pllsai1penabled = 1,
+        .PllSai1Settings.pllsai1qenabled = 1,
+        .PllSai1Settings.pllsai1renabled = 1,
+        .PllSai1Settings.pllsai1div = 0,
+        .PllSai1Settings.pllsai1r = RCC_PLLR_2,
+        .PllSai1Settings.pllsai1q = RCC_PLLQ_2,
+        .PllSai1Settings.pllsai1p = RCC_PLLP_7,
+        .PllSai1Settings.pllsai1n = 8,
+        .PllSai1Settings.pllsai1m = RCC_PLL_M_1,
+
 };
 
 const peripheral_clk_settings peripheralclk[] =
@@ -98,15 +132,68 @@ static void ApplyClockConfiguration(const peripheral_clock_cfg_t* config)
 }
 
 
+
 static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
 {
-    for (uint32_t i = 0; i < SYSCLOCK_CONFIG_CNT; i++)
+
+    RCC_SetSystemClockSource(sysclockconfig->SysClkSrc);
+    if(sysclockconfig->MsiSettings.msienabled)
     {
-        RCC_SetSystemClockSource(sysclockconfig->SysClkSrc);
-        RCC_MsiRangeSelect(sysclockconfig->MsiRngSelection);
-        RCC_ConfigureMCO(sysclockconfig->McoOutClk,sysclockconfig->McoPreScaler);
-        RCC_EnableMSI(sysclockconfig->MsiRange);        
+        RCC_MsiRangeSelect(sysclockconfig->MsiSettings.MsiRngSelection);
+        RCC_EnableMSI(sysclockconfig->MsiSettings.MsiRange,sysclockconfig->MsiSettings.msienabled);    
     }
+    else
+    {
+        /* Do nothing or log if needed */
+    }
+
+    if(sysclockconfig->HsiSettings.hsienabled)
+    {
+        RCC_EnableHSI(sysclockconfig->HsiSettings.hsikernelon,sysclockconfig->HsiSettings.hsiautostart,sysclockconfig->HsiSettings.hsienabled);
+    }
+    else
+    {
+        /*Do nothing*/
+    }
+
+    if(sysclockconfig->HseSettings.hseenabled)
+    {
+        RCC_EnableHSE(sysclockconfig->HseSettings.hsebypassenl,sysclockconfig->HseSettings.hsecssenl,sysclockconfig->HseSettings.hseenabled);
+    }
+    else
+    {
+        /*Do nothing*/
+    }
+
+    if(sysclockconfig->PllSettings.pllenabled)
+    {
+        RCC_ConfigurePllSrc(sysclockconfig->PllSettings.pllsrc);
+        RCC_ConfigurePllSettings(sysclockconfig->PllSettings.pllm,sysclockconfig->PllSettings.pllp,sysclockconfig->PllSettings.pllq,sysclockconfig->PllSettings.pllr,sysclockconfig->PllSettings.plln,sysclockconfig->PllSettings.plldiv);
+        RCC_EnablePllR(sysclockconfig->PllSettings.pllrenabled);
+        RCC_EnablePllQ(sysclockconfig->PllSettings.pllqenabled);
+        RCC_EnablePllP(sysclockconfig->PllSettings.pllpenabled);
+    }
+
+    else
+    {
+        /*Do nothing*/
+    }
+    
+    if(sysclockconfig->PllSai1Settings.pllsai1enabled)
+    {
+        RCC_ConfigurePllSai1Settings(sysclockconfig->PllSai1Settings.pllsai1m,sysclockconfig->PllSai1Settings.pllsai1p,sysclockconfig->PllSai1Settings.pllsai1q,sysclockconfig->PllSai1Settings.pllsai1r,sysclockconfig->PllSai1Settings.pllsai1n,sysclockconfig->PllSai1Settings.pllsai1div);
+        RCC_EnablePllSai1R(sysclockconfig->PllSai1Settings.pllsai1renabled);
+        RCC_EnablePllSai1Q(sysclockconfig->PllSai1Settings.pllsai1qenabled);
+        RCC_EnablePllSai1P(sysclockconfig->PllSai1Settings.pllsai1penabled);
+    }
+
+    else
+    {
+        /*Do nothing*/
+    }
+    RCC_ConfigureMCO(sysclockconfig->McoSettings.McoOutClk,sysclockconfig->McoSettings.McoPreScaler);
+        
+
 }
 
 /**
@@ -116,7 +203,8 @@ static void InitSysClockConfigurtion(const system_clk_config *sysclockconfig)
  * each configuration using `ApplyClockConfiguration`.
  *
  * @param None
- */
+ * */
+
 static void InitializeAllPeripheralsClocks(void)
 {
 
@@ -129,6 +217,6 @@ static void InitializeAllPeripheralsClocks(void)
 void InitAllClocks(void)
 {
     InitializeAllPeripheralsClocks();
-    InitSysClockConfigurtion(systemclock);
+    InitSysClockConfigurtion(&systemclock);
 }
 

@@ -20,11 +20,73 @@ typedef enum
 
 typedef struct 
 {
-    RCCSysClkSource_t SysClkSrc;
+    uint8_t msienabled;
     RccMsiRngSel_t MsiRngSelection;
+    RccMsiRng_t MsiRange;
+
+}MsiSettingsConfigs;
+
+typedef struct
+{
+    uint8_t hsienabled;
+    uint8_t hsikernelon;
+    uint8_t hsiautostart;
+}HsiSettingsConfigs;
+
+typedef struct
+{
+    uint8_t hseenabled;
+    uint8_t hsebypassenl;
+    uint8_t hsecssenl;
+}HseSettingsConfigs;
+
+typedef struct 
+{
+    uint8_t pllenabled;
+    RccPllClockSource_t pllsrc;
+    RccPllM_t pllm;
+    RccPllP_t pllp;
+    RccPllQ_t pllq;
+    uint8_t plln;
+    RccPllR_t pllr;
+    uint8_t plldiv;
+    uint8_t pllpenabled;
+    uint8_t pllqenabled;
+    uint8_t pllrenabled;
+
+}PllSettingsConfigs;
+
+typedef struct 
+{
+    uint8_t pllsai1enabled;
+    RccPllM_t pllsai1m;
+    RccPllP_t pllsai1p;
+    RccPllQ_t pllsai1q;
+    uint8_t pllsai1n;
+    uint8_t pllsai1div;
+    RccPllR_t pllsai1r;
+    uint8_t pllsai1penabled;
+    uint8_t pllsai1qenabled;
+    uint8_t pllsai1renabled;
+
+}PllSai1SettingsConfigs;
+
+typedef struct 
+{
     RccMcoSource_t McoOutClk;
     RccMcoPrescaler_t McoPreScaler;
-    RccMsiRng_t MsiRange;
+}McoClock_t;
+
+
+typedef struct 
+{
+    RCCSysClkSource_t SysClkSrc;
+    McoClock_t McoSettings;
+    MsiSettingsConfigs MsiSettings;
+    HsiSettingsConfigs HsiSettings;
+    HseSettingsConfigs HseSettings;
+    PllSettingsConfigs PllSettings;
+    PllSai1SettingsConfigs PllSai1Settings;
 
 }system_clk_config;
 

@@ -13,12 +13,12 @@
 
 RCC_TypeDef *RCC_ClockConfigs = ((RCC_TypeDef *) RCC_BASE);
 
+
 /* RCC_CR Register Starts */
-void RCC_EnableMSI(RccMsiRng_t range)
+void RCC_EnableMSI(RccMsiRng_t range,bool En)
 {
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_MSIRANGE_Pos,4,range);
-    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_MSION_Pos,1,1);
-
+    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_MSION_Pos,1,En);
     while(GET(RCC_ClockConfigs->CR,RCC_CR_MSIRDY_Pos)!=1);
     /*Will put a whle loop here to check if its enabled?*/
 
@@ -30,31 +30,33 @@ void RCC_MsiRangeSelect(RccMsiRngSel_t RangeSrc)
 }
 
 
-void RCC_EnableHSI(bool kernelClock, bool autoStartStop)
+void RCC_EnableHSI(bool kernelClock, bool autoStartStop,bool En)
 {
-    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSION_Pos,1,1);
+    
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSIKERON_Pos,1,kernelClock);
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSIASFS_Pos,1,autoStartStop);
-
+    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSION_Pos,1,En);
     while(GET(RCC_ClockConfigs->CR,RCC_CR_HSIRDY_Pos)!=1);
 }
 
-void RCC_EnableHSE(RccHseByPass_t ByPassSetting,bool ClkSecuSet)
+void RCC_EnableHSE(RccHseByPass_t ByPassSetting,bool ClkSecuSet,bool En)
 {
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSEBYP_Pos,1,ByPassSetting);
     SET_BITS(RCC_ClockConfigs->CR,RCC_CR_CSSON_Pos,1,ClkSecuSet);
+    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_HSEON_Pos,1,En);
     while(GET(RCC_ClockConfigs->CR,RCC_CR_HSERDY_Pos)!=1);
 }
 
-void RCC_EnableMainPLL(void)
+void RCC_EnableMainPLL(bool En)
 {
-    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_PLLON_Pos,1,1);
+    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_PLLON_Pos,1,En);
+
     while(GET(RCC_ClockConfigs->CR,RCC_CR_PLLRDY_Pos)!=1);
 }
 
-void RCC_EnablePLLSAI1(void)
+void RCC_EnablePLLSAI1(bool En)
 {
-    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_PLLSAI1ON_Pos,1,1);
+    SET_BITS(RCC_ClockConfigs->CR,RCC_CR_PLLSAI1ON_Pos,1,En);
     while(GET(RCC_ClockConfigs->CR,RCC_CR_PLLSAI1RDY_Pos)!=1);
 }
 
@@ -100,55 +102,55 @@ void RCC_ConfigurePllSrc(RccPllSrc_t PllSrc)
     SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLSRC_Pos,2,PllSrc);
 }
 
-void RCC_ConfigurePllSettings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR)
+void RCC_ConfigurePllSettings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR,uint8_t RccPllN,uint8_t RccPllDiv)
 {
     SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLM_Pos,3,RccPllM);
-    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLN_Pos,7,8);
+    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLN_Pos,7,RccPllN);
     SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLP_Pos,1,RccPllP);
     SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLQ_Pos,2,RccPllQ);
     SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLR_Pos,2,RccPllR);
-    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLPDIV_Pos,5,2);
+    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLPDIV_Pos,5,RccPllDiv);
 }
 
-void RCC_EnablePllR(void)
+void RCC_EnablePllR(bool En)
 {
-    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLREN_Pos,1,1);
+    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLREN_Pos,1,En);
 }
 
-void RCC_EnablePllQ(void)
+void RCC_EnablePllQ(bool En)
 {
-    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLQEN_Pos,1,1);
+    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLQEN_Pos,1,En);
 }
 
-void RCC_EnablePllP(void)
+void RCC_EnablePllP(bool En)
 {
-    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLPEN_Pos,1,1);
+    SET_BITS(RCC_ClockConfigs->PLLCFGR,RCC_PLLCFGR_PLLPEN_Pos,1,En);
 }
 /* RCC_PLLCFGR Register Ends */
 
 /* RCC_PLLSAI1CFGR Register Starts */
-void RCC_ConfigurePllSai1Settings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR)
+void RCC_ConfigurePllSai1Settings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR,uint8_t RccPllSai1N,uint8_t RccPllSai1Div)
 {
-    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1N_Pos,7,8);
+    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1N_Pos,7,RccPllSai1N);
     SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1P_Pos,1,RccPllP);
     SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1Q_Pos,2,RccPllQ);
     SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1R_Pos,2,RccPllR);
-    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1PDIV_Pos,5,2);
+    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1PDIV_Pos,5,RccPllSai1Div);
 }
 
-void RCC_EnablePllSai1R(void)
+void RCC_EnablePllSai1R(bool En)
 {
-    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1REN_Pos,1,1);
+    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1REN_Pos,1,En);
 }
 
-void RCC_EnablePllSaiQ(void)
+void RCC_EnablePllSai1Q(bool En)
 {
-    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1QEN_Pos,1,1);
+    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1QEN_Pos,1,En);
 }
 
-void RCC_EnablePllSaiP(void)
+void RCC_EnablePllSai1P(bool En)
 {
-    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1PEN_Pos,1,1);
+    SET_BITS(RCC_ClockConfigs->PLLSAI1CFGR,RCC_PLLSAI1CFGR_PLLSAI1PEN_Pos,1,En);
 }
 
 /* RCC_PLLSAI1CFGR Register Ends */

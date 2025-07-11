@@ -11,6 +11,14 @@
 
 typedef enum
 {
+    MSI_RC,
+    HSI_RC,
+    HSE_RC,
+    PLL_RC
+}Osc_t;
+
+typedef enum
+{
     SYSCLK_MSI,
     SYSCLK_HSI16,
     SYSCLK_HSE,
@@ -75,11 +83,11 @@ typedef enum
 
 typedef enum
 {
-    PLLSAI1_EXTCLK,
+    PLL_NOCLK,
     PLLSAICLK,
     PLLSAICLK_MAIN,
     PLLHSI16,
-}RccPllSai1ClockSource_t;
+}RccPllClockSource_t;
 
 typedef enum
 {
@@ -184,10 +192,10 @@ typedef enum
 
 typedef enum
 {
-    PLL_PLLSAI_NOCLK=0x00,
-    PLL_PLLSAI_MSICLK,
-    PLL_PLLSAI_HSI16,
-    PLL_PLLSAI_HSE,
+    PLL_PLL_NOCLK=0x00,
+    PLL_PLL_MSICLK,
+    PLL_PLL_HSI16,
+    PLL_PLL_HSE,
 }RccPllSrc_t;
 
 typedef enum
@@ -366,25 +374,25 @@ typedef enum
 
 
 
-void RCC_EnableMSI(RccMsiRng_t range);
-void RCC_EnableHSI(bool kernelClock, bool autoStartStop);
-void RCC_EnableHSE(RccHseByPass_t ByPassSetting,bool ClkSecuSet);
-void RCC_EnableMainPLL(void);
-void RCC_EnablePLLSAI1(void);
+void RCC_EnableMSI(RccMsiRng_t range,bool En);
+void RCC_EnableHSI(bool kernelClock, bool autoStartStop,bool En);
+void RCC_EnableHSE(RccHseByPass_t ByPassSetting,bool ClkSecuSet,bool En);
+void RCC_EnableMainPLL(bool En);
+void RCC_EnablePLLSAI1(bool En);
 void RCC_SetSystemClockSource(RCCSysClkSource_t source);
 void RCC_SetAHBPrescaler(AhbPrescaler_t prescaler);
 void RCC_SetAPB1Prescaler(Apb1Prescaler_t prescaler);
 void RCC_SetAPB2Prescaler(Apb1Prescaler_t prescaler);
 void RCC_ConfigureMCO(RccMcoSource_t source, RccMcoPrescaler_t prescaler);
 void RCC_ConfigurePllSrc(RccPllSrc_t PllSrc);
-void RCC_ConfigurePllSettings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR);
-void RCC_EnablePllR(void);
-void RCC_EnablePllQ(void);
-void RCC_EnablePllP(void);
-void RCC_ConfigurePllSai1Settings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR);
-void RCC_EnablePllSai1R(void);
-void RCC_EnablePllSaiQ(void);
-void RCC_EnablePllSaiP(void);
+void RCC_ConfigurePllSettings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR,uint8_t RccPllN, uint8_t RccPllDiv);
+void RCC_EnablePllR(bool En);
+void RCC_EnablePllQ(bool En);
+void RCC_EnablePllP(bool En);
+void RCC_ConfigurePllSai1Settings(RccPllM_t RccPllM,RccPllP_t RccPllP ,RccPllQ_t RccPllQ,RccPllR_t RccPllR,uint8_t RccPllSai1N, uint8_t RccPllSai1Div);
+void RCC_EnablePllSai1R(bool En);
+void RCC_EnablePllSai1Q(bool En);
+void RCC_EnablePllSai1P(bool En);
 void RCC_EnableInterrupt(Rcc_InterruptClock_t ClockType);
 bool RCC_GetClockInterrupt(Rcc_InterruptClock_t ClockType);
 void RCC_ClearClockInterrupt(Rcc_InterruptClock_t ClockType);
