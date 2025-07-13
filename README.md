@@ -2,17 +2,25 @@ This is a how to use document
  
 Prerequisites : 
 
->>> STM32L433 Board , 
->>> arm-eabi toolchain 
->>> Make Toolchain
->>> stm32 programmer exe
->>> Any editor of your choice 
+### STM32L433 Board , 
+
+### arm-eabi toolchain 
+
+### Make Toolchain
+
+### stm32 programmer exe
+
+###  Any editor of your choice 
 
 How to build 
->>> open command prompt in your cloned directory 
->>> run make
+### open command prompt in your cloned directory 
+
+###  run make
+
 ### or optionally 
+
 ### run make --clean and then run make
+
 
 
 If you face any installation error : https://kleinembedded.com/stm32-without-cubeide-part-1-the-bare-necessities/
