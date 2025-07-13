@@ -28,7 +28,7 @@ void main(void)
     {
 
         Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);
-        delayrndom(60000);
+        delayrndom(70000);
 
         Gpio_SetLevel(led_pin.port,led_pin.pin,LOW);
         delayrndom(60000);
