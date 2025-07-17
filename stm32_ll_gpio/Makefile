@@ -8,6 +8,7 @@ COMMON_INCLUDES := \
     -I../CMSIS/Core/Include \
     -I../Device/ARM/ARMCM4/Include \
     -I../include/stm32l433 \
+    -I../stm32_ll_syscfg/include \
     -I./include \
     -I./src
 
@@ -32,7 +33,7 @@ all: $(OBJS)
 
 # --- Compilation Rule (Generic for all .c to .o in this module) ---
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@ 
+	$(CC) $(CFLAGS) -c $^ -o $@ 
 # --- Clean Rule for this module ---
 clean:
 	rm -f $(OBJS) 

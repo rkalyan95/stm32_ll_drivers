@@ -1,5 +1,5 @@
 #include "stm32l433_ll_gpio_cfg.h"
-
+#include "stm32_syscfg_cfg.h"
 //Warning : DO not change the Pa13 and Pa14 configs please , because they are used for debugger.
 
 const portpintconfigs_t led_pin = {
@@ -11,6 +11,7 @@ const portpintconfigs_t led_pin = {
     .initalstate = HIGH,
     .alternate_functionality = AF_NONE,
     .pin_speed = HIGH_SPEED,
+    .pin_interrupttype = ISR_NONE,
 };
 
 const portpintconfigs_t mco_pin = {
@@ -22,6 +23,7 @@ const portpintconfigs_t mco_pin = {
     .initalstate = LOW,
     .alternate_functionality = AF_0,
     .pin_speed = VERYHIGH_SPEED,
+    .pin_interrupttype = ISR_NONE,
 };
 
 
@@ -35,6 +37,7 @@ const portpintconfigs_t button_pin = {
     .initalstate = LOW,
     .alternate_functionality = AF_NONE,
     .pin_speed = HIGH_SPEED,
+    .pin_interrupttype = ISR_RISING,
 };
 
 
@@ -73,7 +76,10 @@ static void InitaliseAllPins(const portpintconfigs_t *configsgpio , uint32_t con
     for(cfg_count=0;cfg_count<config_count;cfg_count++)
     {
         Gpio_SetLevel(configsgpio[cfg_count].port , configsgpio[cfg_count].pin , configsgpio[cfg_count].initalstate);
-        
+        if(configsgpio[cfg_count].pin_interrupttype != ISR_NONE)
+        {
+            Gpio_Interrupts_Configure(configsgpio[cfg_count].port,configsgpio[cfg_count].pin);
+        }
     }
 
     return;

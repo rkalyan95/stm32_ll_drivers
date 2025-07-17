@@ -19,7 +19,7 @@ typedef enum
     GPIO_PORT_C = 2,
     GPIO_PORT_D = 3,
     GPIO_PORT_E = 4,
-    GPIO_PORT_H = 5
+    GPIO_PORT_H = 7
 }gpioport_t;
 
 typedef enum
@@ -99,6 +99,14 @@ typedef enum
     VERYHIGH_SPEED,
 }pinspeed_t;
 
+typedef enum
+{
+    ISR_FALLING,
+    ISR_RISING,
+    ISR_BOTH,
+    ISR_NONE,
+}pininterrupt_t;
+
 typedef struct
 {
     gpioport_t port;
@@ -109,6 +117,7 @@ typedef struct
     pininitalstate_t initalstate;
     alternatefunction_t alternate_functionality;
     pinspeed_t pin_speed;
+    pininterrupt_t pin_interrupttype;
 }portpintconfigs_t;
 
 
