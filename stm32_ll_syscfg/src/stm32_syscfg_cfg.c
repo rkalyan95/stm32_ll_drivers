@@ -1,6 +1,7 @@
 //#include "stm32l433_ll_gpio.h"
 #include "stm32_syscfg.h"
 #include "stm32_syscfg_cfg.h"
+#include "stm32_ll_exti.h"
 #include <stdint.h>
 
 

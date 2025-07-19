@@ -86,6 +86,11 @@ const peripheral_clk_settings peripheralclk=
         .peripheral_id.ahb2_id = AHB2_GPIOH,
         .peripheral_clksrc = CCIPR_CLKSRCNONE,
     },
+    {
+        .peripheral_cat = PERIPHERAL_CAT_APB2,
+        .peripheral_id.ahb2_id = APB2_SYSCFG,
+        .peripheral_clksrc = CCIPR_CLKSRCNONE,
+    },
 
 };
 

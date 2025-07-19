@@ -1,5 +1,6 @@
 #include "stm32l433_ll_gpio_cfg.h"
 #include "stm32_syscfg_cfg.h"
+#include "stm32_ll_exti.h"
 //Warning : DO not change the Pa13 and Pa14 configs please , because they are used for debugger.
 
 const portpintconfigs_t led_pin = {
@@ -8,11 +9,24 @@ const portpintconfigs_t led_pin = {
     .pinType = GPIO_OUTPUT,
     .pullconfig = GPIO_PULL_DOWN,
     .outputpushpull = GPIO_OTYPE_PUSHPULL,
-    .initalstate = HIGH,
+    .initalstate = LOW,
     .alternate_functionality = AF_NONE,
     .pin_speed = HIGH_SPEED,
     .pin_interrupttype = ISR_NONE,
 };
+
+const portpintconfigs_t logic_pin = {
+    .port = GPIO_PORT_C,
+    .pin = GPIO_PIN_9,
+    .pinType = GPIO_OUTPUT,
+    .pullconfig = GPIO_PULL_DOWN,
+    .outputpushpull = GPIO_OTYPE_PUSHPULL,
+    .initalstate = LOW,
+    .alternate_functionality = AF_NONE,
+    .pin_speed = HIGH_SPEED,
+    .pin_interrupttype = ISR_NONE,
+};
+
 
 const portpintconfigs_t mco_pin = {
     .port = GPIO_PORT_A,
@@ -40,8 +54,8 @@ const portpintconfigs_t button_pin = {
     .pin_interrupttype = ISR_RISING,
 };
 
-
-const portpintconfigs_t Stm32NucleoConfigsPortB[] = {led_pin,button_pin,mco_pin};
+bool level = HIGH;
+const portpintconfigs_t Stm32NucleoConfigsPortB[] = {led_pin,button_pin,mco_pin,logic_pin};
 
 #define CONFIG_CNT     (sizeof(Stm32NucleoConfigsPortB)/sizeof(Stm32NucleoConfigsPortB[0]))
 
@@ -78,7 +92,10 @@ static void InitaliseAllPins(const portpintconfigs_t *configsgpio , uint32_t con
         Gpio_SetLevel(configsgpio[cfg_count].port , configsgpio[cfg_count].pin , configsgpio[cfg_count].initalstate);
         if(configsgpio[cfg_count].pin_interrupttype != ISR_NONE)
         {
-            Gpio_Interrupts_Configure(configsgpio[cfg_count].port,configsgpio[cfg_count].pin);
+           Gpio_Interrupts_Configure(configsgpio[cfg_count].port,configsgpio[cfg_count].pin);
+           ConfigureInterruptMask(configsgpio[cfg_count].pin,1);
+           ConfigureRisingEdgeInterrupt(configsgpio[cfg_count].pin,1);
+            
         }
     }
 
@@ -89,4 +106,12 @@ void Gpio_ConfigAllPorts(void)
 {
     Gpio_InitialiseAllPinsPort(Stm32NucleoConfigsPortB,CONFIG_CNT);
     InitaliseAllPins(Stm32NucleoConfigsPortB,CONFIG_CNT);
+}
+
+void __isr_exti15_10(void)
+{
+
+    level = !level;
+    ClearPendingInterrupt(button_pin.pin);
+   
 }

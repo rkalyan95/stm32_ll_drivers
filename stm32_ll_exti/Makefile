@@ -8,8 +8,6 @@ COMMON_INCLUDES := \
     -I../CMSIS/Core/Include \
     -I../Device/ARM/ARMCM4/Include \
     -I../include/stm32l433 \
-    -I../stm32_ll_syscfg/include \
-    -I../stm32_ll_exti/include \
     -I./include \
     -I./src
 
@@ -18,9 +16,7 @@ CFLAGS := $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99 -O2 -g
 
 # --- Source Files for GPIO module ---
 CSOURCES := \
-    src/stm32l433_ll_gpio.c \
-    src/stm32l433_ll_gpio_cfg.c\
-    ../stm32_ll_exti/src/stm32_ll_exti.c\
+    src/stm32_ll_exti.c \
 
 # --- Object Files for GPIO module (will be in this directory: stm32_ll_gpio/) ---
 OBJS := $(CSOURCES:.c=.o)
