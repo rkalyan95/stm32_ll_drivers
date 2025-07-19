@@ -2,7 +2,7 @@
 #include "stm32l433_ll_gpio_cfg.h"
 
 
-GPIO_TypeDef *GetPortAddress(const uint8_t port)
+static inline GPIO_TypeDef *GetPortAddress(const uint8_t port)
 {
     switch(port)
     {

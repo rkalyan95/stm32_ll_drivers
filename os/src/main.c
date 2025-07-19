@@ -7,7 +7,12 @@
 #include "stm32l433_ll_rcc.h"
 #include "stm32l433_ll_gpio_cfg.h"
 #include "stm32l433_ll_gpio.h"
+#include "stm32_ll_exti.h"
+#include "System_Fsm.h"
 
+
+
+#ifdef DEBUG_DELAY
 static void delayrndom(uint32_t dly)
 {
     for(uint32_t i=0;i<dly;i++)
@@ -15,29 +20,30 @@ static void delayrndom(uint32_t dly)
         __NOP();
     }
 }
+#endif
 
+btn_evt_t finalBtnEvt;
+led_states_t led_state_main = LED_OFF;
 
 void main(void)
 {
 
-    if(InitAllClocks()!=ERR_SUCCESS)
-    {
-        while(1);
-    }
+    InitAllClocks();
 
     Gpio_ConfigAllPorts();
 
      __enable_irq();
     NVIC_SetPriority(EXTI15_10_IRQn, 47);
     NVIC_EnableIRQ(EXTI15_10_IRQn);      // Enable the interrupt in the NVIC
-    level =  false;
-    Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);
+
 
     while(1)
     {
-        Gpio_SetLevel(led_pin.port,led_pin.pin,level);
+        finalBtnEvt = BTN_NONE;
+        finalBtnEvt = handledebouncecrudeway();
+        led_state_main = Fsm_Run(finalBtnEvt,led_state_main);
+        
     }
-
 
 }
 

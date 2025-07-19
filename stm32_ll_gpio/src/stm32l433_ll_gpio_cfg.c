@@ -95,7 +95,7 @@ static void InitaliseAllPins(const portpintconfigs_t *configsgpio , uint32_t con
            Gpio_Interrupts_Configure(configsgpio[cfg_count].port,configsgpio[cfg_count].pin);
            ConfigureInterruptMask(configsgpio[cfg_count].pin,1);
            ConfigureRisingEdgeInterrupt(configsgpio[cfg_count].pin,1);
-            
+           ConfigureFallingEdgeInterrupt(configsgpio[cfg_count].pin,1);
         }
     }
 
@@ -106,12 +106,4 @@ void Gpio_ConfigAllPorts(void)
 {
     Gpio_InitialiseAllPinsPort(Stm32NucleoConfigsPortB,CONFIG_CNT);
     InitaliseAllPins(Stm32NucleoConfigsPortB,CONFIG_CNT);
-}
-
-void __isr_exti15_10(void)
-{
-
-    level = !level;
-    ClearPendingInterrupt(button_pin.pin);
-   
 }

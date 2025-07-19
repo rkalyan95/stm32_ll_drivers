@@ -12,7 +12,7 @@ COMMON_INCLUDES := \
     -I./src
 
 # --- Compiler Flags ---
-CFLAGS := $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99 -O2 -g -gdwarf-4 # <--- This line (14) MUST start at column 1, no leading spaces/tabs
+CFLAGS := -o2 $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99 -O2 -g -gdwarf-4 # <--- This line (14) MUST start at column 1, no leading spaces/tabs
 
 # --- Source Files for GPIO module ---
 CSOURCES := \

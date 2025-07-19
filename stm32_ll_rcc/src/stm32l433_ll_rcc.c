@@ -18,7 +18,7 @@ typedef uint8_t (*register_readfunction_t)(void);
 
 static RCC_TypeDef *RCC_ClockConfigs = ((RCC_TypeDef *) RCC_BASE);
 
-static Error_t TimeoutHandler(register_readfunction_t rdy_func,uint8_t expected_value,uint32_t timeout)
+static inline Error_t TimeoutHandler(register_readfunction_t rdy_func,uint8_t expected_value,uint32_t timeout)
 {
     uint8_t currentvalue;
     do
@@ -39,27 +39,27 @@ static Error_t TimeoutHandler(register_readfunction_t rdy_func,uint8_t expected_
     
 }
 
-static uint8_t get_msirdy(void)
+static inline uint8_t get_msirdy(void)
 {
     return GET(RCC_ClockConfigs->CR,RCC_CR_MSIRDY_Pos);
 }
 
-static uint8_t get_hsirdy(void)
+static inline uint8_t get_hsirdy(void)
 {
     return GET(RCC_ClockConfigs->CR,RCC_CR_HSIRDY_Pos);
 }
 
-static uint8_t get_hserdy(void)
+static inline uint8_t get_hserdy(void)
 {
     return GET(RCC_ClockConfigs->CR,RCC_CR_HSERDY_Pos);
 }
 
-static uint8_t get_pllrdy(void)
+static inline uint8_t get_pllrdy(void)
 {
     return GET(RCC_ClockConfigs->CR,RCC_CR_PLLRDY_Pos);
 }
 
-static uint8_t get_pllsai1rdy(void)
+static inline uint8_t get_pllsai1rdy(void)
 {
     return GET(RCC_ClockConfigs->CR,RCC_CR_PLLSAI1RDY_Pos);
 }

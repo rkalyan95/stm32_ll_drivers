@@ -15,7 +15,8 @@ COMMON_INCLUDES := -I ../CMSIS/Core/Include/ \
 CFLAGS=-o2 $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99 
 
 CSOURCES := src/main.c  \
-			src/startup.c
+			src/startup.c\
+			src/System_Fsm.c\
 
 OBJS := $(CSOURCES:.c=.o)
 

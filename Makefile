@@ -22,7 +22,7 @@ LDFLAGS := -nostdlib -T $(LINKER_SCRIPT) -Wl,-Map=$(TARGET).map
 
 # --- Source Files for each module (relative to project root) ---
 # Define all source files here. The sub-Makefiles will use these for compilation.
-C_SOURCES_OS := os/src/main.c os/src/startup.c
+C_SOURCES_OS := os/src/main.c os/src/startup.c os/src/System_Fsm.c
 C_SOURCES_GPIO := stm32_ll_gpio/src/stm32l433_ll_gpio.c stm32_ll_gpio/src/stm32l433_ll_gpio_cfg.c
 C_SOURCES_RCC := stm32_ll_rcc/src/stm32l433_ll_rcc.c stm32_ll_rcc/src/stm32l433_ll_rcc_cfg.c
 C_SOURCES_SYSCFG := stm32_ll_syscfg/src/stm32_syscfg.c stm32_ll_syscfg/src/stm32_syscfg_cfg.c

@@ -121,7 +121,7 @@ typedef struct
 }portpintconfigs_t;
 
 
-GPIO_TypeDef *GetPortAddress(const uint8_t port);
+
 void Gpio_ConfigPin(const portpintconfigs_t *portpinconfigs);
 void Gpio_ClearPin(const uint8_t port , const uint8_t pin);
 void Gpio_SetPin(const uint8_t port , const uint8_t pin);
