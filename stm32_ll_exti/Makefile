@@ -9,6 +9,7 @@ COMMON_INCLUDES := \
     -I../Device/ARM/ARMCM4/Include \
     -I../include/stm32l433 \
     -I./include \
+    -I ../os/include\
     -I./src
 
 # --- Compiler Flags ---

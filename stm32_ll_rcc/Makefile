@@ -6,6 +6,7 @@ COMMON_INCLUDES := -I ../CMSIS/Core/Include/ \
 				   -I ../Device/ARM/ARMCM4/Include/ \
 				   -I ../include/stm32l433/ \
 				   -I ./include \
+				   -I ../os/include\
 				   -I ./src \
 
 CFLAGS=-o2 $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99 

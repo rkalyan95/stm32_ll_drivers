@@ -1,6 +1,6 @@
 #include "stm32l433_ll_gpio.h"
 #include "stm32l433_ll_gpio_cfg.h"
-
+#include "common.h"
 
 static inline GPIO_TypeDef *GetPortAddress(const uint8_t port)
 {

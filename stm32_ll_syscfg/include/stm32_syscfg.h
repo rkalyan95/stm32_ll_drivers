@@ -10,15 +10,6 @@
 #define SRAM_KEY2    0xCA
 
 
-#define GET(x,pos)   ((x & 1UL<<pos) >> pos)
-#define SET(x,pos)   (x |= (1UL<<pos))
-#define CLEAR(x,pos)   (x &= ~(1UL<<pos))
-#define TOGGLE(x,pos) (x ^= 1UL<<pos)
-#define SET_BITS(v, p, n, new_val) \
-  ((v) = ((v) & ~(((1UL << (n)) - 1) << (p))) | (((new_val) & ((1UL << (n)) - 1)) << (p)))
-
-#define GET_BITS(v, p, n) \
-  (((v) >> (p)) & ((1UL << (n)) - 1))
 
 
 typedef enum

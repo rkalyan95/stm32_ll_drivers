@@ -1,20 +1,13 @@
 
 #include <stm32l433_ll_rcc.h>
 #include <stdbool.h>
+#include "common.h"
 
 typedef uint8_t (*register_readfunction_t)(void);
 
 #define MAX_TIMEOUTVALUE 10000
 
-#define GET(x,pos)   ((x & 1UL<<pos) >> pos)
-#define SET(x,pos)   (x |= (1UL<<pos))
-#define CLEAR(x,pos)   (x &= ~(1UL<<pos))
-#define TOGGLE(x,pos) (x ^= 1UL<<pos)
-#define SET_BITS(v, p, n, new_val) \
-  ((v) = ((v) & ~(((1UL << (n)) - 1) << (p))) | (((new_val) & ((1UL << (n)) - 1)) << (p)))
 
-#define GET_BITS(v, p, n) \
-  (((v) >> (p)) & ((1UL << (n)) - 1))
 
 static RCC_TypeDef *RCC_ClockConfigs = ((RCC_TypeDef *) RCC_BASE);
 

@@ -1,6 +1,7 @@
 #include "stm32_syscfg.h"
 #include "stm32l433xx.h"
 #include <stdbool.h>
+#include "common.h"
 
 /**
  * @brief  Sets the system memory mapping mode.

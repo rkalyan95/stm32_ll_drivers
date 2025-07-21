@@ -7,6 +7,7 @@ COMMON_INCLUDES := -I ../CMSIS/Core/Include/ \
 				   -I ../include/stm32l433/ \
 				   -I ../stm32_ll_gpio/include \
 				   -I ../stm32_ll_exti/include \
+				   -I ../os/include\
 				   -I ./include \
 				   -I ./src \
 
