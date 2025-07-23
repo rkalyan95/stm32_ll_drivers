@@ -26,6 +26,7 @@ C_SOURCES_OS := os/src/main.c os/src/startup.c os/src/System_Fsm.c
 C_SOURCES_GPIO := stm32_ll_gpio/src/stm32l433_ll_gpio.c stm32_ll_gpio/src/stm32l433_ll_gpio_cfg.c
 C_SOURCES_RCC := stm32_ll_rcc/src/stm32l433_ll_rcc.c stm32_ll_rcc/src/stm32l433_ll_rcc_cfg.c
 C_SOURCES_SYSCFG := stm32_ll_syscfg/src/stm32_syscfg.c stm32_ll_syscfg/src/stm32_syscfg_cfg.c
+C_SOURCES_FLASH := stm32_ll_flash/src/stm32_ll_flash.c stm32_ll_flash/src/stm32_ll_flash_cfg.c
 C_SOURCES_EXTI := stm32_ll_exti/src/stm32_ll_exti.c
 
 # --- Object Files for each module (derived from source files) ---
@@ -35,11 +36,12 @@ OBJS_OS := $(patsubst %.c,%.o,$(C_SOURCES_OS))
 OBJS_GPIO := $(patsubst %.c,%.o,$(C_SOURCES_GPIO))
 OBJS_RCC := $(patsubst %.c,%.o,$(C_SOURCES_RCC))
 OBJS_SYSCFG := $(patsubst %.c,%.o,$(C_SOURCES_SYSCFG))
+OBJS_FLASH := $(patsubst %.c,%.o,$(C_SOURCES_FLASH))
 OBJS_EXTI := $(patsubst %.c,%.o,$(C_SOURCES_EXTI))
 
 # --- All Object Files to Link ---
 # This variable combines all object files from all modules into a single list
-ALL_OBJS := $(OBJS_OS) $(OBJS_GPIO) $(OBJS_RCC) $(OBJS_SYSCFG) $(OBJS_EXTI)
+ALL_OBJS := $(OBJS_OS) $(OBJS_GPIO) $(OBJS_RCC) $(OBJS_SYSCFG) $(OBJS_EXTI) $(OBJS_FLASH)
 
 # --- Phony Targets ---
 .PHONY: all clean submodules_build submodules_clean
@@ -57,6 +59,7 @@ submodules_build:
 	$(MAKE) -C stm32_ll_rcc all
 	$(MAKE) -C stm32_ll_syscfg all
 	$(MAKE) -C stm32_ll_exti all
+	$(MAKE) -C stm32_ll_flash all
 # --- Linking Rule ---
 # This rule links all the generated object files into the final ELF executable.
 # It depends on all object files ($(ALL_OBJS)).
@@ -81,3 +84,4 @@ submodules_clean:
 	$(MAKE) -C stm32_ll_rcc clean
 	$(MAKE) -C stm32_ll_syscfg clean
 	$(MAKE) -C stm32_ll_exti clean
+	$(MAKE) -C stm32_ll_flash clean

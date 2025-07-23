@@ -9,6 +9,7 @@ COMMON_INCLUDES := -I ../CMSIS/Core/Include/ \
 				   -I ../stm32_ll_rcc/include \
 				   -I ../stm32_ll_syscfg/include \
 				   -I ../stm32_ll_exti/include \
+				   -I ../stm32_ll_flash/include \
 				   -I ./include \
 				   -I ./src \
 
