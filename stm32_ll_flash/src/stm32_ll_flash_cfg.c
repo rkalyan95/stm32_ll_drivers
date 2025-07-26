@@ -4,8 +4,9 @@
 #define MAX_PAGES 0x7FU
 #define PAGE_SIZE 0x800
 
-#define FIRMWARE_VERSION_PAGE  80
+#define FIRMWARE_VERSION_PAGE  126
 
+FirmwareVersion_t FirmwareVersion = {.major = 'S',.minor='T',.patch='M',.versi=" FIRMWARE V2.8"};
 
 
 FlashErr_t PageNumToAddr(uint8_t PageNum,uint32_t *pgstart_address,uint32_t *pgend_address)
@@ -105,8 +106,25 @@ FlashErr_t UpdateFirmwareInFlash(void)
 {
     FlashErr_t RetCode;
     uint64_t data = 0x74616a6152;
-    //RetCode = WriteDataToPageNumber(FIRMWARE_VERSION_PAGE,(uint64_t*)&FirmwareVersion,sizeof(FirmwareVersion_t));
-    RetCode = WriteDataToPageNumber(FIRMWARE_VERSION_PAGE,&data,sizeof(uint64_t));
+    RetCode = WriteDataToPageNumber(FIRMWARE_VERSION_PAGE,(uint64_t*)&FirmwareVersion,sizeof(FirmwareVersion_t));
+    //RetCode = WriteDataToPageNumber(FIRMWARE_VERSION_PAGE,&data,sizeof(uint64_t));
 
     return RetCode;
+}
+
+FlashErr_t ReadFirmwareDetails(FirmwareVersion_t *FirmwareVer)
+{
+    uint32_t pagestart_address;
+    uint32_t pageend_address;
+    FlashErr_t RetCode;
+
+   RetCode = PageNumToAddr(FIRMWARE_VERSION_PAGE,&pagestart_address,&pageend_address);
+   
+   FirmwareVer = (volatile FirmwareVersion_t*)pagestart_address;
+   while(GetErrorInfo(BUSY_ERR) != 0);
+    if(FirmwareVer->major != 'S')
+    {
+        return FLASH_OPR_FAILED;
+    }
+   return FLASH_OPR_SUCESSS;
 }

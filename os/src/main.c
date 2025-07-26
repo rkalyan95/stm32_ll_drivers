@@ -24,12 +24,23 @@ static void delayrndom(uint32_t dly)
 
 btn_evt_t finalBtnEvt;
 led_states_t led_state_main = LED_OFF;
+FirmwareVersion_t Version;
 
 void main(void)
 {
+
     FlashErr_t RetCode;
     InitAllClocks();
-    RetCode = UpdateFirmwareInFlash();
+
+    RetCode = ReadFirmwareDetails(&Version);  //this is causing issue , even the writes do not work
+    if(RetCode!=FLASH_OPR_SUCESSS)
+    {
+        LedOn();
+        RetCode = UpdateFirmwareInFlash();
+        while(1);
+    }
+
+    RetCode = ReadFirmwareDetails(&Version);  //this is causing issue , even the writes do not work
 
     Gpio_ConfigAllPorts();
 
