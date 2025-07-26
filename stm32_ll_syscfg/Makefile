@@ -11,7 +11,7 @@ COMMON_INCLUDES := -I ../CMSIS/Core/Include/ \
 				   -I ./include \
 				   -I ./src \
 
-CFLAGS=-o2 $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99 
+CFLAGS=-o0 -g $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99 
 
 CSOURCES := src/stm32_syscfg.c  \
 			src/stm32_syscfg_cfg.c \

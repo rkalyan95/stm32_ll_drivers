@@ -9,8 +9,8 @@
 #include "stm32l433_ll_gpio.h"
 #include "stm32_ll_exti.h"
 #include "System_Fsm.h"
-
-
+#include "stm32_ll_flash.h"
+#include "stm32_ll_flash_cfg.h"
 
 #ifdef DEBUG_DELAY
 static void delayrndom(uint32_t dly)
@@ -27,8 +27,9 @@ led_states_t led_state_main = LED_OFF;
 
 void main(void)
 {
-
+    FlashErr_t RetCode;
     InitAllClocks();
+    RetCode = UpdateFirmwareInFlash();
 
     Gpio_ConfigAllPorts();
 

@@ -1,4 +1,4 @@
-#include <stm32l433xx.h>
+
 #include "stm32_ll_flash.h"
 #include "common.h"
 
@@ -16,7 +16,7 @@
  */
 
 
-static inline void ClearAllErrors(void)
+void ClearAllErrors(void)
 {
     ((GetErrorInfo(EOP_ST)==1)?SetErrorInfo(EOP_ST):0);
     ((GetErrorInfo(OPERR_ST)==1)?SetErrorInfo(OPERR_ST):0);
@@ -48,7 +48,7 @@ static inline void ClearAllErrors(void)
 
 static inline FlashErr_t UnLockSequence(bool Unlock)
 {
-    uint16_t timeout = 1000;
+    uint32_t timeout = 1000000;
     //Unlock the opt register by key sequence
     if(Unlock==true)
     {
@@ -288,6 +288,7 @@ FlashErr_t SetWriteProtAreaA(uint8_t *WrpStart , uint8_t *WrpEnd)
     return RetCode;
 }
 
+
 /**
  * @brief Retrieve the write protection for area B.
  * 
@@ -479,11 +480,11 @@ FlashErr_t ConfigureSlpPwrDwn(bool Sleep , bool PwrDwn)
  * 
  * @note Ensure that the flash is not busy before calling this function.
  */
-FlashErr_t UnlockFlashPwrDwnSeq(void)
+FlashErr_t UnlockFlashSeq(void)
 {
     FlashErr_t RetCode = FLASH_OPR_FAILED;
-    SET_BITS(FLASH->KEYR,0,32,PDKEY1);
-    SET_BITS(FLASH->KEYR,0,32,PDKEY2);
+    SET_BITS(FLASH->KEYR,0,32,0x45670123);
+    SET_BITS(FLASH->KEYR,0,32,0xCDEF89AB);
 
     RetCode = FLASH_OPR_SUCESSS;
     return RetCode;
@@ -606,12 +607,16 @@ FlashErr_t GetErrorInfo(FlashStatus_t FlashStatus)
 FlashErr_t SetFlashCrRegister(FlashControl_t FlashCtrl, bool En)
 {
     FlashErr_t RetCode = FLASH_OPR_FAILED;
-    if(FlashCtrl<FLASH_CR_PNB_Pos || FlashCtrl > FLASH_CR_PNB_Pos + 7)
-    {
-        SET_BITS(FLASH->CR,FlashCtrl,1,En);
-        RetCode = (GET_BITS(FLASH->CR,FlashCtrl,1)==En);
+    
+    // FIXED: Allow all bits EXCEPT PNB range to be set individually
+    // PNB should be set using SelectPageNumber() function
+    if(FlashCtrl >= FLASH_CR_PNB_Pos && FlashCtrl <= FLASH_CR_PNB_Pos + 7) {
+        // PNB bits should use SelectPageNumber function instead
+        return FLASH_OPR_FAILED;
     }
-
+    
+    SET_BITS(FLASH->CR, FlashCtrl, 1, En);
+    RetCode = (GET_BITS(FLASH->CR, FlashCtrl, 1) == En) ? FLASH_OPR_SUCESSS : FLASH_OPR_FAILED;
     
     return RetCode;
     
@@ -722,18 +727,30 @@ FlashErr_t FlashErasePage(uint8_t PageNum)
 {
     FlashErr_t RetCode = FLASH_OPR_FAILED;
 
-    SelectPageNumber(PageNum);
+    UnlockFlashSeq();
+    if(GET_BITS(FLASH->CR, FLASH_CR_LOCK_Pos, 1) == 1) {
+        // Flash is still locked - unlock failed
+        return FLASH_OPR_FAILED;
+    }
+    RetCode = SelectPageNumber(PageNum);
+    if(RetCode != FLASH_OPR_SUCESSS) {
+        return RetCode;
+    }
 
     RetCode = SetFlashCrRegister(PAGE_ERASE_ENABLE,true);
-    if(RetCode == FLASH_OPR_SUCESSS)
-    {
-        SetFlashCrRegister(PAGE_ERASE_ENABLE,true);
-        /* Disable the mass erase bit according to datasheet */
-        SetFlashCrRegister(MASS_ERASE_ENABLE,false);
-        SetFlashCrRegister(START_ERASE,true);
-        /*Wait till it is cleared by the flash , no timeout because its flash erase operation*/
-        while(GetFlashCrRegister(START_ERASE)!=0);
+    
+    if(RetCode != FLASH_OPR_SUCESSS) {
+        return RetCode;
     }
+
+    SetFlashCrRegister(START_ERASE,true);
+
+    while(GetFlashCrRegister(BUSY_ERR)!=0);
+    
+    SetErrorInfo(EOP_ST);
+
+    RetCode = SetFlashCrRegister(PAGE_ERASE_ENABLE,false);
+
     return RetCode;
 
 }
@@ -756,3 +773,4 @@ FlashErr_t FlashEraseMass(void)
     }
     return RetCode;
 }
+

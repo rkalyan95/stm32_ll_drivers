@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-
+#include <stm32l433xx.h>
 #define PDKEY1  0x04152637U
 #define PDKEY2  0xFAFBFCFDU
 
@@ -105,7 +105,7 @@ FlashErr_t SetFlashLatency(FlashLatency_t FlashLat);
 FlashErr_t SetPreFetchCache(bool IPre , bool Icache , bool Dcache);
 FlashErr_t EnableDataInstructionReset(bool DCacheRst , bool ICacheRst);
 FlashErr_t ConfigureSlpPwrDwn(bool Sleep , bool PwrDwn);
-FlashErr_t UnlockFlashPwrDwnSeq(void);
+FlashErr_t UnlockFlashSeq(void);
 FlashErr_t UnlockOptReg(void);
 FlashErr_t SetErrorInfo(FlashStatus_t FlashStatus);
 FlashErr_t GetErrorInfo(FlashStatus_t FlashStatus);
@@ -117,4 +117,5 @@ FlashErr_t GetEccCorrAndDet(bool *EccCorr , bool *EccDet);
 FlashErr_t FlashErasePage(uint8_t PageNum);
 FlashErr_t FlashEraseMass(void);
 FlashErr_t GetFlashCrRegister(FlashControl_t controlBit);
+void ClearAllErrors(void);
 #endif
