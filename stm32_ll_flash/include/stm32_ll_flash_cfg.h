@@ -4,6 +4,11 @@
 #include "stm32_ll_flash.h"
 #include <stdint.h>
 
+typedef struct
+{
+
+}ErrorLog_t;
+
 typedef struct 
 {
     uint8_t  major;
@@ -11,6 +16,7 @@ typedef struct
     uint8_t  patch;
     uint8_t  versi[61];
 } FirmwareVersion_t;
+
 
 
 

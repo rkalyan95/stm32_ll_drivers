@@ -6,7 +6,7 @@ const system_clk_config systemclock =
         .SysClkSrc = SYSCLK_MSI,
 
         .MsiSettings.MsiRngSelection = MSI_RANGESRC_CR,
-        .MsiSettings.MsiRange = RCC_MSISRANGE_4MHZ_SETTING,
+        .MsiSettings.MsiRange = RCC_MSISRANGE_24MHZ_SETTING,
         .MsiSettings.msienabled = ENABLED,
 
         .McoSettings.McoPreScaler = MCO_DIV1,
@@ -91,7 +91,11 @@ const peripheral_clk_settings peripheralclk=
         .peripheral_id.ahb2_id = APB2_SYSCFG,
         .peripheral_clksrc = CCIPR_CLKSRCNONE,
     },
-
+    {
+        .peripheral_cat = PERIPHERAL_CAT_APB1P1,
+        .peripheral_id.ahb2_id = APB1_TIM2,
+        .peripheral_clksrc = CCIPR_PCLK,
+    },
 };
 
 #define CLOCK_CONFIG_CNT      (sizeof(peripheral_configs)/sizeof(peripheral_configs[0]))
