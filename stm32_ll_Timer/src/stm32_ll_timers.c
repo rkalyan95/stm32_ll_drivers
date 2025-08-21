@@ -155,6 +155,13 @@ TimerError_t TimerGetDmaAndInterruptSt(TimerStatusReg_t BitPos , uint8_t *Cfg)
     return TimerErrorStatus;
 }
 
+TimerError_t TimerSetDmaAndInterruptSt(TimerStatusReg_t BitPos , uint8_t Cfg)
+{
+    TimerError_t TimerErrorStatus = TIMER_OPR_FAILED;
+    (Cfg==1)?SET(TIM2->SR,BitPos):CLEAR(TIM2->SR,BitPos);
+    TimerErrorStatus = TIMER_OPR_SUCCESS;
+    return TimerErrorStatus;
+}
 /************************************************ Timer Event Generation Register ******************************************************/
 TimerError_t TimerConfigureEvtGenRegister(TimerEvtGenReg_t BitPos , uint8_t Cfg)
 {

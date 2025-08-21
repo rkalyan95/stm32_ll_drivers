@@ -18,6 +18,7 @@ CFLAGS := -o0 -g $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99
 # --- Source Files for GPIO module ---
 CSOURCES := \
     src/stm32_ll_timers.c \
+    src/stm32_ll_timers_cfg.c\
 
 # --- Object Files for GPIO module (will be in this directory: stm32_ll_gpio/) ---
 OBJS := $(CSOURCES:.c=.o)
