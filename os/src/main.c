@@ -53,6 +53,19 @@ void main(void)
         finalBtnEvt = handledebouncecrudeway();
         led_state_main = Fsm_Run(finalBtnEvt,led_state_main);
         LedFade();
+#if 0
+        if(ledisr>2 && ledisr<5)
+        {  
+             
+             Gpio_SetLevel(led_pin.port,led_pin.pin,1);
+        }
+        else if(ledisr>5)
+        {
+            ledisr = 0;
+            Gpio_SetLevel(led_pin.port,led_pin.pin,0); 
+        }
+#endif
+       
     }
 
 }

@@ -2,7 +2,9 @@
 #define STM32_LL_TIMERS_CFG_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
+extern uint8_t ledisr;
 typedef enum
 {
     ENABLED_SET,
@@ -20,9 +22,9 @@ typedef enum
 typedef enum
 {
     TIMER_OUTPUT_COMPARE,
-    TIMER_INPUT_CAPTURE_MODE1,
-    TIMER_INPUT_CAPTURE_MODE2,
-    TIMER_INPUT_CAPTURE_MODE3,
+    INPUT_CAPTURE_FALLING_EDGE,
+    INPUT_CAPTURE_RISING_EDGE,
+    INPUT_CAPTURE_BOTH_EDGES,
 }Timer_t;
 
 typedef enum
@@ -129,6 +131,25 @@ typedef enum
     EXTERNAL_DIVBY8,
 }ExtPrescaler_t;
 
+typedef enum
+{
+    NO_FILTER,                          // 0000: No filter, sampling is done
+    FSAMPLING_FCK_INT_N2,               // 0001: fSAMPLING=fCK_INT, N=2
+    FSAMPLING_FCK_INT_N4,               // 0010: fSAMPLING=fCK_INT, N=4
+    FSAMPLING_FCK_INT_N8,               // 0011: fSAMPLING=fCK_INT, N=8
+    FSAMPLING_FDTS_DIV2_N6,             // 0100: fSAMPLING=fDTS/2, N=6
+    FSAMPLING_FDTS_DIV2_N8,             // 0101: fSAMPLING=fDTS/2, N=8
+    FSAMPLING_FDTS_DIV4_N6,             // 0110: fSAMPLING=fDTS/4, N=6
+    FSAMPLING_FDTS_DIV4_N8,             // 0111: fSAMPLING=fDTS/4, N=8
+    FSAMPLING_FDTS_DIV8_N6,             // 1000: fSAMPLING=fDTS/8, N=6
+    FSAMPLING_FDTS_DIV8_N8,             // 1001: fSAMPLING=fDTS/8, N=8
+    FSAMPLING_FDTS_DIV16_N5,            // 1010: fSAMPLING=fDTS/16, N=5
+    FSAMPLING_FDTS_DIV16_N6,            // 1011: fSAMPLING=fDTS/16, N=6
+    FSAMPLING_FDTS_DIV16_N8,            // 1100: fSAMPLING=fDTS/16, N=8
+    FSAMPLING_FDTS_DIV32_N5,            // 1101: fSAMPLING=fDTS/32, N=5
+    FSAMPLING_FDTS_DIV32_N6,            // 1110: fSAMPLING=fDTS/32, N=6
+    FSAMPLING_FDTS_DIV32_N_NO_VALUE     // 1111: fSAMPLING=fDTS/32, N=  
+}InputCapFilter_t;
 typedef struct 
 {
     DmaEvt_t DmaEvt;
@@ -162,6 +183,11 @@ typedef struct
     SlaveMode_t SlaveMode;
     SlaveInputTriggerSel_t InputTrigger;
     ExtPrescaler_t ExtPrescaler;
+    InputCapFilter_t InputCapturFilter;
+    OutputCmpMode_t OutCmpMode;
+    Dir_t CntDirection;
+    Mode_t CntMode;
+    UpdateEventGen_t UpdateEventGen;
     
 }TimerChannelCfg_t;
 
@@ -171,10 +197,7 @@ typedef struct
     ArrCfg_t *AutoReloadSetting;
     DmaCfg_t *DmaCfg;
     TimerIsr_t *IsrData;
-    OutputCmpMode_t OutCmpMode;
-    Dir_t CntDirection;
-    Mode_t CntMode;
-    UpdateEventGen_t UpdateEventGen;
+
     
 }TimerCfg_t;
 
