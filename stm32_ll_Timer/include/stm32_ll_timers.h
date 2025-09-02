@@ -3,6 +3,7 @@
 
 #include <stm32l433xx.h>
 #include <stdbool.h>
+
 typedef enum
 {
     TIMER_OPR_FAILED,

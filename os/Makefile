@@ -14,11 +14,12 @@ COMMON_INCLUDES := -I ../CMSIS/Core/Include/ \
 				   -I ./include \
 				   -I ./src \
 
-CFLAGS=-o0 -g $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -nostdlib -std=gnu99 
+CFLAGS=-o0 -g $(COMMON_INCLUDES) -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -std=gnu99 -O0 -g -gdwarf-4
 
 CSOURCES := src/main.c  \
 			src/startup.c\
 			src/System_Fsm.c\
+			src/servo.c \
 
 OBJS := $(CSOURCES:.c=.o)
 

@@ -165,13 +165,6 @@ typedef struct
 
 }TimerIsr_t;
 
-typedef struct
-{
-  Enable_t ArrEn;  
-  uint32_t AutoReloadValue;
-  uint32_t TimerCompareValue;
-  uint16_t TimerPrescaler;
-}ArrCfg_t;
 
 typedef struct
 {
@@ -188,20 +181,17 @@ typedef struct
     Dir_t CntDirection;
     Mode_t CntMode;
     UpdateEventGen_t UpdateEventGen;
-    
+    uint32_t TimerCompareValue;
 }TimerChannelCfg_t;
 
 typedef struct 
 {
     TimerChannelCfg_t *TimerCfg;
-    ArrCfg_t *AutoReloadSetting;
     DmaCfg_t *DmaCfg;
     TimerIsr_t *IsrData;
-
     
 }TimerCfg_t;
 
-void PwmInit(void);
-void LedFade(void);
+
 #endif // STM32_LL_TIMERS_CFG_H
 

@@ -6,6 +6,8 @@ MEMORY
 	SRAM (rwx): ORIGIN = 0x20000000,LENGTH = 64K
 }
 
+PROVIDE(_estack = ORIGIN(SRAM) + LENGTH(SRAM));
+
 SECTIONS
 {
 	.isr_vector :

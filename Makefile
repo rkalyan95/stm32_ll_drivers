@@ -18,11 +18,11 @@ TARGET := stm32_ll_nucleo.elf
 # -lc: Link against the standard C library (libc.a from newlib-nano).
 # -lgcc: Link against the GCC compiler support library (libgcc.a).
 # These two are crucial when -nostdlib is used and you need functions like memcpy/memset.
-LDFLAGS := -nostdlib -T $(LINKER_SCRIPT) -Wl,-Map=$(TARGET).map
-
+LDFLAGS := -T $(LINKER_SCRIPT) -nostdlib -Wl,-Map=$(TARGET).map -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,--start-group -lc -lgcc -Wl,--end-group
+ARCH_FLAGS := -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 # --- Source Files for each module (relative to project root) ---
 # Define all source files here. The sub-Makefiles will use these for compilation.
-C_SOURCES_OS := os/src/main.c os/src/startup.c os/src/System_Fsm.c
+C_SOURCES_OS := os/src/main.c os/src/startup.c os/src/System_Fsm.c os/src/servo.c
 C_SOURCES_GPIO := stm32_ll_gpio/src/stm32l433_ll_gpio.c stm32_ll_gpio/src/stm32l433_ll_gpio_cfg.c
 C_SOURCES_RCC := stm32_ll_rcc/src/stm32l433_ll_rcc.c stm32_ll_rcc/src/stm32l433_ll_rcc_cfg.c
 C_SOURCES_SYSCFG := stm32_ll_syscfg/src/stm32_syscfg.c stm32_ll_syscfg/src/stm32_syscfg_cfg.c
@@ -73,7 +73,9 @@ submodules_build:
 $(TARGET): $(ALL_OBJS)
 	@echo "--- Linking Phase ---"
 	@echo "ALL_OBJS for linking: $(ALL_OBJS)"
-	$(CC) $(LDFLAGS) $^ -o $@
+	$(LD) $(ARCH_FLAGS) $(LDFLAGS) -o $@ $(ALL_OBJS) \
+	    -Wl,--start-group -lc -lgcc -Wl,--end-group \
+	    -lm -lnosys
 
 # --- Clean Rule ---
 # This rule removes the final executable and map file, and then calls the 'clean'

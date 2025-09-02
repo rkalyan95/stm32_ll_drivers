@@ -13,15 +13,15 @@ extern uint32_t _ebss;
 void main(void);
 void reset_handler(void);
 void default_handler(void);
-void nmi_handler(void)__attribute__((weak, alias("default_handler")));
-void mem_manage_handler(void)__attribute__((weak, alias("default_handler")));
-void hardfault_handler(void) __attribute__((weak, alias("default_handler")));
-void bus_fault_handler(void) __attribute__((weak, alias("default_handler")));
-void usage_fault_handler(void) __attribute__((weak, alias("default_handler")));
-void svcall_handler(void) __attribute__((weak, alias("default_handler")));
-void debug_monitor_handler(void) __attribute__((weak, alias("default_handler")));
-void pendSv_handler(void) __attribute__((weak, alias("default_handler")));
-void systick_handler(void) __attribute__((weak, alias("default_handler")));
+void nmi_handler(void);
+void mem_manage_handler(void);
+void hardfault_handler(void);
+void bus_fault_handler(void);
+void usage_fault_handler(void);
+void svcall_handler(void);
+void debug_monitor_handler(void);
+void pendSv_handler(void) ;
+void systick_handler(void);
 void __isr_wwdg(void)__attribute__((weak, alias("default_handler")));
 void __isr_pvdpvm(void)__attribute__((weak, alias("default_handler")));
 void __isr_rtctamper_tstamp_csslse(void)__attribute__((weak, alias("default_handler")));
@@ -218,6 +218,52 @@ void default_handler(void)
     while(1);
 }
 
+void nmi_handler(void)
+{
+  while(1);
+}
+void mem_manage_handler(void)
+{
+  while(1);
+}
+void hardfault_handler(void)
+{
+  while(1);
+}
+void bus_fault_handler(void)
+{
+  while(1);
+}
+void usage_fault_handler(void)
+{
+  while(1);
+}
+void svcall_handler(void)
+{
+  while(1);
+}
+void debug_monitor_handler(void)
+{
+  while(1);
+}
+void pendSv_handler(void) 
+{
+  while(1);
+}
+void systick_handler(void)
+{
+  while(1);
+}
+
+
+void FPU_Enable(void) {
+    // CPACR register: enable CP10 and CP11 full access
+    SCB->CPACR |= (0xF << 20);
+    __DSB();
+    __ISB();
+}
+
+
 void reset_handler(void)
 {
     uint32_t data_size = (uint32_t)&_edata - (uint32_t)&_sdata;
@@ -237,6 +283,6 @@ for (uint32_t i = 0; i < data_size; i++)
   {
     bss[i] = 0;
   }
-  
+  FPU_Enable();
   main();
 }
