@@ -17,6 +17,7 @@ typedef enum
     TIMER_CH2,
     TIMER_CH3,
     TIMER_CH4,
+    TIMER_MAX_CHANNEL,
 }TimerChannel_t;
 // Your code here
 typedef enum
@@ -189,9 +190,10 @@ typedef struct
     TimerChannelCfg_t *TimerCfg;
     DmaCfg_t *DmaCfg;
     TimerIsr_t *IsrData;
-    
 }TimerCfg_t;
 
 
+void LedFade(void);
+void TimerInit(TimerCfg_t *TimerCfg,uint16_t pre , uint32_t arrvalue);
 #endif // STM32_LL_TIMERS_CFG_H
 

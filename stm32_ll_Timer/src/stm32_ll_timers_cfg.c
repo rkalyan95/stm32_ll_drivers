@@ -1,134 +1,10 @@
 #include "stm32_ll_timers_cfg.h"
 #include "stm32_ll_timers.h"
 #include <stddef.h>
-#define OUTPUT_TIMER_TEST 
 
 
-#define INPUT_FREQUENCY    24000000UL
-#define MIN_PW             0.5f
-#define MAX_PW             2.5f
-#define MAX_ANGLE          180.f
-#define MIN_ANGLE          0.f
 
-#define SERVOANGLE_TOMS(ANGLE)    ((MIN_PW + ((MAX_PW - MIN_PW)*(ANGLE/(MAX_ANGLE-MIN_ANGLE)))))
-
-#define TIMER_ARRVALUE     159  
-#define TIMER_PRESCALER    2999
-#define AUTO_RELOADED       1  
-
-#define OUTPUT_FREQENCY    ((INPUT_FREQUENCY)/((TIMER_PRESCALER+1)*(TIMER_ARRVALUE+1)))
-
-
-#define MS_TO_TICKS(MS) \
-    ((uint32_t)((MS * OUTPUT_FREQENCY * (TIMER_ARRVALUE+1)) / 1000.0f))
-
-
-#define SERVOANGLETOTICKS(angle)   MS_TO_TICKS(SERVOANGLE_TOMS(angle))
-
-uint8_t ledisr=0;
 volatile static bool isr_occured=0;
-volatile uint8_t tickCnt = 0;
-
-TimerChannelCfg_t ServoBottom = {
-    .TimerNumber = TIMER_CH1,
-    .MasterModeTrigout = COUNTER_UP,
-    .SampleRate = TIMER_SAMPLE_DIV1,
-    .TimerOutPolarity = TIMER_ACTIVE_HIGH,
-    .TimerType = TIMER_OUTPUT_COMPARE,//INPUT_CAPTURE_FALLING_EDGE,//
-    .ExtPrescaler = PRESCALER_OFF,
-    .InputCapturFilter = FSAMPLING_FDTS_DIV32_N6,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .CntDirection = COUNTER_UP,
-    .CntMode = EDGE_ALIGNED,
-    .UpdateEventGen = UPDATE_EVT_ENABLED,
-    .TimerCompareValue = 10,
-};
-
-TimerChannelCfg_t ServoMiddle = {
-    .TimerNumber = TIMER_CH2,
-    .MasterModeTrigout = COUNTER_UP,
-    .SampleRate = TIMER_SAMPLE_DIV1,
-    .TimerOutPolarity = TIMER_ACTIVE_HIGH,
-    .TimerType = TIMER_OUTPUT_COMPARE,//INPUT_CAPTURE_FALLING_EDGE,//
-    .ExtPrescaler = PRESCALER_OFF,
-    .InputCapturFilter = FSAMPLING_FDTS_DIV32_N6,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .CntDirection = COUNTER_UP,
-    .CntMode = EDGE_ALIGNED,
-    .UpdateEventGen = UPDATE_EVT_ENABLED,
-    .TimerCompareValue = 10,
-};
-
-TimerChannelCfg_t ServoTop = {
-    .TimerNumber = TIMER_CH3,
-    .MasterModeTrigout = COUNTER_UP,
-    .SampleRate = TIMER_SAMPLE_DIV1,
-    .TimerOutPolarity = TIMER_ACTIVE_HIGH,
-    .TimerType = TIMER_OUTPUT_COMPARE,//INPUT_CAPTURE_FALLING_EDGE,//
-    .ExtPrescaler = PRESCALER_OFF,
-    .InputCapturFilter = FSAMPLING_FDTS_DIV32_N6,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .CntDirection = COUNTER_UP,
-    .CntMode = EDGE_ALIGNED,
-    .UpdateEventGen = UPDATE_EVT_ENABLED,
-    .TimerCompareValue = 10,
-};
-
-TimerChannelCfg_t ServoHand = {
-    .TimerNumber = TIMER_CH4,
-    .MasterModeTrigout = COUNTER_UP,
-    .SampleRate = TIMER_SAMPLE_DIV1,
-    .TimerOutPolarity = TIMER_ACTIVE_HIGH,
-    .TimerType = TIMER_OUTPUT_COMPARE,//INPUT_CAPTURE_FALLING_EDGE,//
-    .ExtPrescaler = PRESCALER_OFF,
-    .InputCapturFilter = FSAMPLING_FDTS_DIV32_N6,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .CntDirection = COUNTER_UP,
-    .CntMode = EDGE_ALIGNED,
-    .UpdateEventGen = UPDATE_EVT_ENABLED,
-    .TimerCompareValue = 10,
-};
-
-
-TimerIsr_t TimerIsr = {
-    .IsrEn = 1,
-    .IsrPrio = 56
-};
-
-DmaCfg_t DmaSetting = {
-    .DmaEvt = DMA_EVT_ON_CNTCMP,
-    .Trig_Evt_Dma_En = 0,
-    .Trig_Upd_Dma_En = 0,
-    .Trig_Cmp_Dma_En = 0,
-};
-
-TimerCfg_t myTimers[] = 
-{
-    {
-        .TimerCfg = &ServoHand,
-        .IsrData = &TimerIsr,
-        .DmaCfg = &DmaSetting,
-    },
-    {
-        .TimerCfg = &ServoBottom,
-        .IsrData = &TimerIsr,
-        .DmaCfg = &DmaSetting,
-    },
-    {
-        .TimerCfg = &ServoTop,
-        .IsrData = &TimerIsr,
-        .DmaCfg = &DmaSetting,
-    },
-    {
-        .TimerCfg = &ServoMiddle,
-        .IsrData = &TimerIsr,
-        .DmaCfg = &DmaSetting,
-    },
-
-};
-
-
-#define TIMERCHANNEL_CNT      (sizeof(myTimers)/sizeof(myTimers[0]))
 
 
 static void ConfigureOutputSettings(TimerCfg_t *TimerCfg,uint8_t timerIdx)
@@ -137,18 +13,18 @@ static void ConfigureOutputSettings(TimerCfg_t *TimerCfg,uint8_t timerIdx)
     TimerSetCounterMode(TimerCfg[timerIdx].TimerCfg->CntDirection);                              // Set up-counting mode (0)
     TimerConfigureControlRegister1(TIMER_DIR_MODE, TimerCfg[timerIdx].TimerCfg->CntMode);   // Set direction to up-counting (0)
     TimerSetSampleRate(TimerCfg[timerIdx].TimerCfg->SampleRate);                               // Set clock division to 0 (no division)
-
-    
 }
 
 
 static void ConfigureTimerChannel(TimerCfg_t *TimerCfg,uint8_t timerIdx)
 {
     /* Defensive checks: ensure pointer and index valid */
-    if (TimerCfg == NULL) return;
-    if (timerIdx >= TIMERCHANNEL_CNT) return;
+    if (TimerCfg == NULL) { return; }
+    if (timerIdx >= TIMER_MAX_CHANNEL) { return; }
+
     TimerChannelCfg_t *chan = TimerCfg[timerIdx].TimerCfg;
-    if (chan == NULL) return;
+
+    if (chan == NULL) { return; }
 
     switch(chan->TimerNumber)
     {
@@ -303,14 +179,14 @@ static void ConfigureChannelDmaEvtInterrupts(TimerCfg_t *TimerCfg,uint8_t timerI
     TimerConfigureDmaAndInterrupts(TIMER_STATUS_UPDATEINTER,1);
 }
 
-static void TimerInit(TimerCfg_t *TimerCfg)
+void TimerInit(TimerCfg_t *TimerCfg,uint16_t pre , uint32_t arrvalue)
 {
     /*Disable counter first to configure safely*/ 
     TimerUpdateCountValue(0);
     TimerConfigureControlRegister1(COUNTER_ENABLE, 0);
    // Configure basic timer parameters
-    TimerUpdatePrescale(TIMER_PRESCALER);        // Set the prescaler value
-    TimerUpdateAutoReloadCount(TIMER_ARRVALUE);       // Set the period (Auto-Reload Register)
+    TimerUpdatePrescale(pre);        // Set the prescaler value
+    TimerUpdateAutoReloadCount(arrvalue);       // Set the period (Auto-Reload Register)
 
     // Basic CR1 settings (if not already handled by specialized functions)
     TimerConfigureControlRegister1(TIMER_AUTO_REL_EN, 1); // Enable auto-reload preload
@@ -328,11 +204,7 @@ static void TimerInit(TimerCfg_t *TimerCfg)
     NVIC_EnableIRQ(TIM2_IRQn);      // Enable the interrupt in the NVIC
 }
 
-void PwmInit(void)
-{
-    TimerInit(myTimers);
-}
-
+#if 0
 void LedFade(void)
 {
 
@@ -366,16 +238,7 @@ if(isr_occured)
 
 }
 
-
-void TurnServo(float angle)
-{
-    float timeMs=0.f;
-
-    timeMs = (float)SERVOANGLE_TOMS(angle);
-
-    uint32_t ccr = (uint32_t)MS_TO_TICKS(timeMs);
-    TimerUpdateCompareValue(myTimers[3].TimerCfg->TimerNumber, ccr);
-}
+#endif
 
 
 void __isr_tim2(void)
@@ -383,5 +246,5 @@ void __isr_tim2(void)
     // Clear the update interrupt flag
     TimerSetDmaAndInterruptSt(TIMER_STATUS_UPDATEINTER, 0);
     isr_occured = 1;
-    tickCnt++;
+
 }
