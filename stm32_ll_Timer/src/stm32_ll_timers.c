@@ -275,7 +275,7 @@ TimerError_t TimerConfigureOutputCompReg1(TimerOutputCompareReg1_t BitPos , uint
         case TIMER_OUTPUT_CMPMODE1:
             SET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE1,3,Cfg & 0x07);
             
-            SET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE1+12,1,(Cfg & 0x80)>>7);
+            SET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE1+12,1,(Cfg & 0x08)>>3);
 
             TimerErrorStatus = (GET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE1,3) == Cfg & 0x07)  &&
                                 (GET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE1+12,1) == (Cfg & 0x80)>>7);
@@ -301,7 +301,7 @@ TimerError_t TimerConfigureOutputCompReg1(TimerOutputCompareReg1_t BitPos , uint
         case TIMER_OUTPUT_CMPMODE2:
             SET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE2,3,Cfg & 0x07);
             
-            SET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE2+12,1,(Cfg & 0x80)>>7);
+            SET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE2+12,1,(Cfg & 0x08)>>3);
 
             TimerErrorStatus = (GET_BITS(TIM2->CCMR1,TIMER_OUTPUT_CMPMODE2,3) == Cfg & 0x07);
 
@@ -342,7 +342,7 @@ TimerError_t TimerConfigureOutputCompReg2(TimerOutputCompareReg2_t BitPos , uint
         case TIMER_OUTPUT_CMPMODE3:
             SET_BITS(TIM2->CCMR2,TIMER_OUTPUT_CMPMODE3,3,Cfg & 0x07);
             
-            SET_BITS(TIM2->CCMR2,TIMER_OUTPUT_CMPMODE3+12,1,(Cfg & 0x80)>>7);
+            SET_BITS(TIM2->CCMR2,TIMER_OUTPUT_CMPMODE3+12,1,(Cfg & 0x08)>>3);
 
             TimerErrorStatus = (GET_BITS(TIM2->CCMR2,TIMER_OUTPUT_CMPMODE3,3) == Cfg & 0x07);
 
@@ -368,7 +368,7 @@ TimerError_t TimerConfigureOutputCompReg2(TimerOutputCompareReg2_t BitPos , uint
         case TIMER_OUTPUT_CMPMODE4:
             SET_BITS(TIM2->CCMR2,TIMER_OUTPUT_CMPMODE4,3,Cfg & 0x07);
             
-            SET_BITS(TIM2->CCMR2,TIMER_OUTPUT_CMPMODE4+12,1,(Cfg & 0x80)>>7);
+            SET_BITS(TIM2->CCMR2,TIMER_OUTPUT_CMPMODE4+12,1,(Cfg & 0x08)>>3);
 
             TimerErrorStatus = (GET_BITS(TIM2->CCMR2,TIMER_OUTPUT_CMPMODE4,3) == Cfg & 0x07);
 

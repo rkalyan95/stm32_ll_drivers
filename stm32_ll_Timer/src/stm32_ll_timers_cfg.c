@@ -204,43 +204,6 @@ void TimerInit(TimerCfg_t *TimerCfg,uint16_t pre , uint32_t arrvalue)
     NVIC_EnableIRQ(TIM2_IRQn);      // Enable the interrupt in the NVIC
 }
 
-#if 0
-void LedFade(void)
-{
-
-    static uint32_t ccr = 0;
-
-    static int8_t direction = 1; // 1 for fade up, -1 for fade down
-
-if(isr_occured)
-{
-    
-    isr_occured = 0;
-
-    // Update the compare value
-    ccr += direction;
-
-    // Correctly handle the boundaries
-    if (direction == 1 && ccr >= TIMER_ARRVALUE) {
-        ccr = TIMER_ARRVALUE;
-        direction = -1;
-    } else if (direction == -1 && ccr == 0) {
-        direction = 1;
-    }
-
-    // Apply the new compare value
-   // TimerUpdateCompareValue(myTimers[0].TimerCfg->TimerNumber, ccr);
-    //TimerUpdateCompareValue(myTimers[1].TimerCfg->TimerNumber, ccr);
-    //TimerUpdateCompareValue(myTimers[2].TimerCfg->TimerNumber, ccr);
-
-
-}
-
-}
-
-#endif
-
-
 void __isr_tim2(void)
 {
     // Clear the update interrupt flag

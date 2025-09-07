@@ -28,7 +28,6 @@ static void delayrndom(uint32_t dly)
     }
 }
 
-
 void main(void)
 {
     uint16_t ccr=0;
@@ -50,10 +49,11 @@ void main(void)
     NVIC_SetPriority(EXTI15_10_IRQn, 47);
     NVIC_EnableIRQ(EXTI15_10_IRQn);      // Enable the interrupt in the NVIC
     ServoInit();
-    TurnServo(angle+90.0f,0);
-    TurnServo(angle+45.0f,1);
-    TurnServo(angle+105.0f,2);
-    TurnServo(angle+130.0f,3);
+    
+    //TurnServo(angle,0);
+    ///TurnServo(angle+15.0f,1);
+    //TurnServo(angle+30.0f,2);
+    //TurnServo(angle+45.0f,3);
     while(1)
     {
         finalBtnEvt = BTN_NONE;
