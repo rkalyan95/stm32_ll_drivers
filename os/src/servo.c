@@ -2,112 +2,56 @@
 #include "stm32_ll_timers.h"
 #include "servo.h"
 
-
-TimerChannelCfg_t ServoBottom = {
-    .TimerNumber = TIMER_CH1,
+TimerSpecificConfigs_t ServoTimer = {
     .MasterModeTrigout = COUNTER_UP,
     .SampleRate = TIMER_SAMPLE_DIV1,
     .TimerOutPolarity = TIMER_ACTIVE_HIGH,
-    .TimerType = TIMER_OUTPUT_COMPARE,//INPUT_CAPTURE_FALLING_EDGE,//
     .ExtPrescaler = PRESCALER_OFF,
-    .InputCapturFilter = FSAMPLING_FDTS_DIV32_N6,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .CntDirection = COUNTER_UP,
-    .CntMode = EDGE_ALIGNED,
+    .CntMode = CENTER_ALIGNED_UP,
     .UpdateEventGen = UPDATE_EVT_ENABLED,
-    .TimerCompareValue = 10,
-};
-
-TimerChannelCfg_t ServoMiddle = {
-    .TimerNumber = TIMER_CH2,
-    .MasterModeTrigout = COUNTER_UP,
-    .SampleRate = TIMER_SAMPLE_DIV1,
-    .TimerOutPolarity = TIMER_ACTIVE_HIGH,
-    .TimerType = TIMER_OUTPUT_COMPARE,//INPUT_CAPTURE_FALLING_EDGE,//
-    .ExtPrescaler = PRESCALER_OFF,
-    .InputCapturFilter = FSAMPLING_FDTS_DIV32_N6,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
     .CntDirection = COUNTER_UP,
-    .CntMode = EDGE_ALIGNED,
-    .UpdateEventGen = UPDATE_EVT_ENABLED,
-    .TimerCompareValue = 10,
-};
-
-TimerChannelCfg_t ServoTop = {
-    .TimerNumber = TIMER_CH3,
-    .MasterModeTrigout = COUNTER_UP,
-    .SampleRate = TIMER_SAMPLE_DIV1,
-    .TimerOutPolarity = TIMER_ACTIVE_HIGH,
-    .TimerType = TIMER_OUTPUT_COMPARE,//INPUT_CAPTURE_FALLING_EDGE,//
-    .ExtPrescaler = PRESCALER_OFF,
-    .InputCapturFilter = FSAMPLING_FDTS_DIV32_N6,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .CntDirection = COUNTER_UP,
-    .CntMode = EDGE_ALIGNED,
-    .UpdateEventGen = UPDATE_EVT_ENABLED,
-    .TimerCompareValue = 10,
-};
-
-TimerChannelCfg_t ServoHand = {
-    .TimerNumber = TIMER_CH4,
-    .MasterModeTrigout = COUNTER_UP,
-    .SampleRate = TIMER_SAMPLE_DIV1,
-    .TimerOutPolarity = TIMER_ACTIVE_HIGH,
-    .TimerType = TIMER_OUTPUT_COMPARE,//INPUT_CAPTURE_FALLING_EDGE,//
-    .ExtPrescaler = PRESCALER_OFF,
-    .InputCapturFilter = FSAMPLING_FDTS_DIV32_N6,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .CntDirection = COUNTER_UP,
-    .CntMode = EDGE_ALIGNED,
-    .UpdateEventGen = UPDATE_EVT_ENABLED,
-    .TimerCompareValue = 10,
-};
-
-
-TimerIsr_t TimerIsr = {
     .IsrEn = 1,
     .IsrPrio = 56
 };
 
-DmaCfg_t DmaSetting = {
-    .DmaEvt = DMA_EVT_ON_CNTCMP,
-    .Trig_Evt_Dma_En = 0,
-    .Trig_Upd_Dma_En = 0,
-    .Trig_Cmp_Dma_En = 0,
+
+ChannelSpecificConfigs_t ServoTopChannel = {
+    .TimerNumber = TIMER_CH1,
+    .TimerType = TIMER_OUTPUT_COMPARE,
+    .OutCmpMode = TIMER_OUT_PWM_MODE1,
+    .TimerCompareValue = 79,
 };
 
-TimerCfg_t myTimers[] = 
-{
-    {
-        .TimerCfg = &ServoHand,
-        .IsrData = &TimerIsr,
-        .DmaCfg = &DmaSetting,
-    },
-    {
-        .TimerCfg = &ServoBottom,
-        .IsrData = &TimerIsr,
-        .DmaCfg = &DmaSetting,
-    },
-    {
-        .TimerCfg = &ServoTop,
-        .IsrData = &TimerIsr,
-        .DmaCfg = &DmaSetting,
-    },
-    {
-        .TimerCfg = &ServoMiddle,
-        .IsrData = &TimerIsr,
-        .DmaCfg = &DmaSetting,
-    },
+ChannelSpecificConfigs_t ServoMiddleChannel = {
+    .TimerNumber = TIMER_CH2,
+    .TimerType = TIMER_OUTPUT_COMPARE,
+    .OutCmpMode = TIMER_OUT_PWM_MODE1,
+    .TimerCompareValue = 79,
+};
 
+ChannelSpecificConfigs_t ServoBottomChannel = {
+    .TimerNumber = TIMER_CH3,
+    .TimerType = TIMER_OUTPUT_COMPARE,
+    .OutCmpMode = TIMER_OUT_PWM_MODE1,
+    .TimerCompareValue = 79,
+};
+
+ChannelSpecificConfigs_t ServoHandChannel = {
+    .TimerNumber = TIMER_CH4,
+    .TimerType = TIMER_OUTPUT_COMPARE,
+    .OutCmpMode = TIMER_OUT_PWM_MODE1,
+    .TimerCompareValue = 79,
 };
 
 
-#define TIMERCHANNEL_CNT      (sizeof(myTimers)/sizeof(myTimers[0]))
 
 
 void ServoInit(void)
 {
-    TimerInit(myTimers,TIMER_PRESCALER, TIMER_ARRVALUE);
+    TimerInit(&ServoTimer,&ServoTopChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
+    TimerInit(&ServoTimer,&ServoBottomChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
+    TimerInit(&ServoTimer,&ServoHandChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
+    TimerInit(&ServoTimer,&ServoMiddleChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
 }
 
 void TurnServo(float angle,uint8_t chIdx)
@@ -117,5 +61,5 @@ void TurnServo(float angle,uint8_t chIdx)
     timeMs = (float)SERVOANGLE_TOMS(angle);
 
     uint32_t ccr = (uint32_t)MS_TO_TICKS(timeMs);
-    TimerUpdateCompareValue(myTimers[chIdx].TimerCfg->TimerNumber, ccr);
+    TimerUpdateCompareValue(ServoTopChannel.TimerNumber, ccr);
 }

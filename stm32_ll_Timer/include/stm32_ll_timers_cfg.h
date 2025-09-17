@@ -32,7 +32,6 @@ typedef enum
 {
     COUNTER_UP,
     COUNTER_DOWN,
-    COUNTER_UP_DOWN
 }Dir_t;
 
 typedef enum
@@ -152,6 +151,8 @@ typedef enum
     FSAMPLING_FDTS_DIV32_N6,            // 1110: fSAMPLING=fDTS/32, N=6
     FSAMPLING_FDTS_DIV32_N_NO_VALUE     // 1111: fSAMPLING=fDTS/32, N=  
 }InputCapFilter_t;
+
+
 typedef struct 
 {
     DmaEvt_t DmaEvt;
@@ -160,41 +161,39 @@ typedef struct
     uint8_t Trig_Cmp_Dma_En;
 }DmaCfg_t;
 
-typedef struct 
+
+typedef struct
 {
+    
+    ClockDivFilters_t SampleRate;
+    Master_TrgOut_t MasterModeTrigout;
+    TimerPolarity_t TimerOutPolarity;
+    Mode_t CntMode;
+    Dir_t CntDirection;
+    UpdateEventGen_t UpdateEventGen;
+    SlaveMode_t SlaveMode;
+    SlaveInputTriggerSel_t InputTrigger;
+    ExtPrescaler_t ExtPrescaler;
     Enable_t IsrEn;
     uint8_t IsrPrio;
 
-}TimerIsr_t;
+}TimerSpecificConfigs_t;
 
 
 typedef struct
 {
-    TimerChannel_t TimerNumber;
-    Master_TrgOut_t MasterModeTrigout;
-    ClockDivFilters_t SampleRate;
-    TimerPolarity_t TimerOutPolarity;
     Timer_t TimerType;
-    SlaveMode_t SlaveMode;
-    SlaveInputTriggerSel_t InputTrigger;
-    ExtPrescaler_t ExtPrescaler;
+    TimerChannel_t TimerNumber;
     InputCapFilter_t InputCapturFilter;
     OutputCmpMode_t OutCmpMode;
-    Dir_t CntDirection;
-    Mode_t CntMode;
-    UpdateEventGen_t UpdateEventGen;
     uint32_t TimerCompareValue;
-}TimerChannelCfg_t;
-
-typedef struct 
-{
-    TimerChannelCfg_t *TimerCfg;
-    DmaCfg_t *DmaCfg;
-    TimerIsr_t *IsrData;
-}TimerCfg_t;
+}ChannelSpecificConfigs_t;
 
 
-void LedFade(void);
-void TimerInit(TimerCfg_t *TimerCfg,uint16_t pre , uint32_t arrvalue);
+
+
+
+//void TimerInit(TimerCfg_t *TimerCfg,uint16_t pre , uint32_t arrvalue);
+void TimerInit(TimerSpecificConfigs_t *TimerCfg,ChannelSpecificConfigs_t *ChannelCfg,uint16_t pre , uint32_t arrvalue);
 #endif // STM32_LL_TIMERS_CFG_H
 
