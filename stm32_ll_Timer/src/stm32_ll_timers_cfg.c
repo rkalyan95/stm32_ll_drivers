@@ -4,8 +4,7 @@
 
 
 
-volatile static bool isr_occured=0;
-
+volatile static uint8_t isr_occured=0;
 
 static void ConfigureOutputSettings(TimerSpecificConfigs_t *TimerCfg)
 {
@@ -32,7 +31,7 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
             if(chan->TimerType==TIMER_OUTPUT_COMPARE)
             {
                 
-                TimerConfigureOutputCompReg1(TIMER_OUTPUT_CMPSEL1, chan->TimerType); // Select output compare mode (0 usually for output)
+                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->CapCompareMapping); // Select output compare mode (0 usually for output)
                 TimerConfigureOutputCompReg1(TIMER_OUTPUT_CMPMODE1, chan->OutCmpMode); // Set PWM Mode 1 (0x06 for 0b110)
                 // Configure Output Compare Channel 1 for PWM
                 TimerUpdateCompareValue(chan->TimerNumber, chan->TimerCompareValue);                 // Set the compare value for Channel 1
@@ -41,7 +40,7 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
             }
             else
             {
-                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->TimerType);
+                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->CapCompareMapping);
                 //TimerConfigureInputCaptureReg1(TIMER_CAP_PRESCA1,chan->ExtPrescaler);
                 TimerConfigureInputCaptureReg1(TIMER_CAPFILTER1,chan->InputCapturFilter);
                 if(chan->TimerType==INPUT_CAPTURE_FALLING_EDGE)
@@ -67,7 +66,7 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
             if(chan->TimerType==TIMER_OUTPUT_COMPARE)
             {
                 
-                TimerConfigureOutputCompReg1(TIMER_OUTPUT_CMPSEL2, chan->TimerType); // Select output compare mode (0 usually for output)
+                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->CapCompareMapping); // Select output compare mode (0 usually for output)
                 TimerConfigureOutputCompReg1(TIMER_OUTPUT_CMPMODE2, chan->OutCmpMode); // Set PWM Mode 1 (0x06 for 0b110)
                 // Configure Output Compare Channel 1 for PWM
                 TimerUpdateCompareValue(chan->TimerNumber, chan->TimerCompareValue);                     // Set the compare value for Channel 1
@@ -76,7 +75,7 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
             }
             else
             {
-                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL2,chan->TimerType);
+                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->CapCompareMapping);
                 //TimerConfigureInputCaptureReg1(TIMER_CAP_PRESCA2,chan->ExtPrescaler);
                 TimerConfigureInputCaptureReg1(TIMER_CAPFILTER2,chan->InputCapturFilter);
                 if(chan->TimerType==INPUT_CAPTURE_FALLING_EDGE)
@@ -101,7 +100,7 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
             if(chan->TimerType==TIMER_OUTPUT_COMPARE)
             {
                 
-                TimerConfigureOutputCompReg2(TIMER_OUTPUT_CMPSEL3, chan->TimerType); // Select output compare mode (0 usually for output)
+                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->CapCompareMapping); // Select output compare mode (0 usually for output)
                 TimerConfigureOutputCompReg2(TIMER_OUTPUT_CMPMODE3, chan->OutCmpMode); // Set PWM Mode 1 (0x06 for 0b110)
                 // Configure Output Compare Channel 1 for PWM
                 TimerUpdateCompareValue(chan->TimerNumber, chan->TimerCompareValue);                  // Set the compare value for Channel 1
@@ -110,7 +109,7 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
             }
             else
             {
-                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->TimerType);
+                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->CapCompareMapping);
                 //TimerConfigureInputCaptureReg1(TIMER_CAP_PRESCA1,chan->ExtPrescaler);
                 TimerConfigureInputCaptureReg1(TIMER_CAPFILTER1,chan->InputCapturFilter);
                 if(chan->TimerType==INPUT_CAPTURE_FALLING_EDGE)
@@ -135,7 +134,7 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
             if(chan->TimerType==TIMER_OUTPUT_COMPARE)
             {
                 
-                TimerConfigureOutputCompReg2(TIMER_OUTPUT_CMPSEL4, chan->TimerType); // Select output compare mode (0 usually for output)
+                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->CapCompareMapping); // Select output compare mode (0 usually for output)
                 TimerConfigureOutputCompReg2(TIMER_OUTPUT_CMPMODE4, chan->OutCmpMode); // Set PWM Mode 1 (0x06 for 0b110)
                 // Configure Output Compare Channel 1 for PWM
                 TimerUpdateCompareValue(chan->TimerNumber, chan->TimerCompareValue);                     // Set the compare value for Channel 1
@@ -144,7 +143,7 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
             }
             else
             {
-                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->TimerType);
+                TimerConfigureInputCaptureReg1(TIMER_CNTCMP_SEL1,chan->CapCompareMapping);
                 //TimerConfigureInputCaptureReg1(TIMER_CAP_PRESCA1,chan->ExtPrescaler);
                 TimerConfigureInputCaptureReg1(TIMER_CAPFILTER1,chan->InputCapturFilter);
                 if(chan->TimerType==INPUT_CAPTURE_FALLING_EDGE)
@@ -172,11 +171,9 @@ static void ConfigureTimerChannel(ChannelSpecificConfigs_t *ChannelCfg)
 
 static void ConfigureTimerDmaEvtInterrupts(TimerSpecificConfigs_t *TimerCfg)
 {
-    // Generate an update event to load all configured values into active registers
-    // Use the specific bit position for the Update Generation event (UG)
-   // TimerConfigureEvtGenRegister(TIMER_EVT_CC1G, TimerCfg[0].UpdateEventGen);
-    TimerConfigureEvtGenRegister(TIMER_EVT_UG, TimerCfg->UpdateEventGen);
-    TimerConfigureDmaAndInterrupts(TIMER_UPDATEINTER_ENABLE_DMA,0);
+
+    TimerConfigureDmaAndInterrupts(TIMER_CNTCMP1_INTER_ENABLE_DMA,1);
+    TimerConfigureDmaAndInterrupts(TIMER_UPDATEINTER_ENABLE_DMA,1);
     TimerConfigureDmaAndInterrupts(TIMER_TRIGINTER_ENABLE_DMA,0);
     TimerConfigureDmaAndInterrupts(TIMER_DMARQST_ENABLE_DMA,0);
     TimerConfigureDmaAndInterrupts(TIMER_TRIG_DMA_ENABLE_DMA,0);
@@ -206,10 +203,35 @@ void TimerInit(TimerSpecificConfigs_t *TimerCfg,ChannelSpecificConfigs_t *Channe
     NVIC_EnableIRQ(TIM2_IRQn);      // Enable the interrupt in the NVIC
 }
 
+void GetFeedbackValues(uint8_t timerchanIdx , float *dutycycle)
+{
+    static uint32_t previousCnt = 0;
+    static uint32_t currentCnt = 0;
+    *dutycycle = 0.0f;
+
+    if(isr_occured==1)
+    {
+        previousCnt = TimerGetCountValue(timerchanIdx);
+    }
+    else if(isr_occured==2)
+    {
+        isr_occured = 0;
+        currentCnt = previousCnt + TimerGetCountValue(timerchanIdx);
+        *dutycycle = (float)(currentCnt-previousCnt)/160;
+    }
+
+}
 void __isr_tim2(void)
 {
+    uint8_t test=0;
+    
     // Clear the update interrupt flag
     TimerSetDmaAndInterruptSt(TIMER_STATUS_UPDATEINTER, 0);
-    isr_occured = 1;
+    TimerGetDmaAndInterruptSt(TIMER_STATUS_CAPCMP1, &test);
+    if( test != 0)
+    {
+        TimerSetDmaAndInterruptSt(TIMER_STATUS_CAPCMP1, 0);
+        isr_occured++;
+    }
 
 }

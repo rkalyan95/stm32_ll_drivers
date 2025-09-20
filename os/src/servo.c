@@ -8,7 +8,7 @@ TimerSpecificConfigs_t ServoTimer = {
     .TimerOutPolarity = TIMER_ACTIVE_HIGH,
     .ExtPrescaler = PRESCALER_OFF,
     .CntMode = CENTER_ALIGNED_UP,
-    .UpdateEventGen = UPDATE_EVT_ENABLED,
+    .UpdateEventGen = 1,
     .CntDirection = COUNTER_UP,
     .IsrEn = 1,
     .IsrPrio = 56
@@ -17,30 +17,32 @@ TimerSpecificConfigs_t ServoTimer = {
 
 ChannelSpecificConfigs_t ServoTopChannel = {
     .TimerNumber = TIMER_CH1,
-    .TimerType = TIMER_OUTPUT_COMPARE,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 79,
+    .TimerType = INPUT_CAPTURE_BOTH_EDGES,
+    .CapCompareMapping = INPUT_CAPTURE_TI1,
+    //.OutCmpMode = TIMER_OUT_PWM_MODE1,
+    .InputCapturFilter = NO_FILTER,
+    .TimerCompareValue = 59,
 };
 
 ChannelSpecificConfigs_t ServoMiddleChannel = {
     .TimerNumber = TIMER_CH2,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 79,
+    .TimerCompareValue = 59,
 };
 
 ChannelSpecificConfigs_t ServoBottomChannel = {
     .TimerNumber = TIMER_CH3,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 79,
+    .TimerCompareValue = 59,
 };
 
 ChannelSpecificConfigs_t ServoHandChannel = {
     .TimerNumber = TIMER_CH4,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 79,
+    .TimerCompareValue = 59,
 };
 
 

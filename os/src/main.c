@@ -19,7 +19,7 @@ led_states_t led_state_main = LED_OFF;
 FirmwareVersion_t Version;
 
 float angle=0.0f;
-
+float dutycycle = 0.0f;
 static void delayrndom(uint32_t dly)
 {
     for(uint32_t i=0;i<dly;i++)
@@ -32,9 +32,10 @@ void main(void)
 {
     uint16_t ccr=0;
     FlashErr_t RetCode;
+    
     InitAllClocks();
     Gpio_ConfigAllPorts();
-
+#if 0
     RetCode = ReadFirmwareDetails(&Version);  //this is causing issue , even the writes do not work
 
     if(RetCode!=FLASH_OPR_SUCESSS)
@@ -44,21 +45,27 @@ void main(void)
         RetCode = UpdateFirmwareInFlash();
         Gpio_SetLevel(led_pin.port,led_pin.pin,LOW);
     }
-
+#endif
      __enable_irq();
     NVIC_SetPriority(EXTI15_10_IRQn, 47);
     NVIC_EnableIRQ(EXTI15_10_IRQn);      // Enable the interrupt in the NVIC
     ServoInit();
     
     //TurnServo(angle,0);
-    ///TurnServo(angle+15.0f,1);
+    //TurnServo(angle+15.0f,1);
     //TurnServo(angle+30.0f,2);
     //TurnServo(angle+45.0f,3);
     while(1)
     {
         finalBtnEvt = BTN_NONE;
         finalBtnEvt = handledebouncecrudeway();
+        GetFeedbackValues(1,&dutycycle);
+        if(dutycycle>0.35f && dutycycle<0.38f)
+        {
+            finalBtnEvt = BTN_PRESSED;
+        }
         led_state_main = Fsm_Run(finalBtnEvt,led_state_main);
+        //GetFeedbackValues(1,&dutycycle);
     }
 
 }

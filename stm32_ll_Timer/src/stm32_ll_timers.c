@@ -1,6 +1,6 @@
 #include "stm32_ll_timers.h"
 #include "common.h"
-
+#include <stdint.h>
 
 /**
  * @file stm32_ll_timers.c
@@ -103,9 +103,9 @@ TimerError_t TimerConfigureSlaveModeRegister(TimerSlaveModCtrlReg_t BitPos , uin
     {
         case TIMER_SLAVE_MOD_SEL: // Multi-bit field (SMS)
             SET_BITS(TIM2->SMCR,TIMER_SLAVE_MOD_SEL,3,slaveconfig & 0x07);
-            SET_BITS(TIM2->SMCR,TIMER_SLAVE_MOD_SEL+16,1,((slaveconfig & 0x80)>>7));
+            SET_BITS(TIM2->SMCR,TIMER_SLAVE_MOD_SEL+16,1,((slaveconfig & 0x80)>>3));
             TimerErrorStatus = ((GET_BITS(TIM2->SMCR,TIMER_SLAVE_MOD_SEL,3) == (slaveconfig & 0x07)) &&
-                                (GET_BITS(TIM2->SMCR,TIMER_SLAVE_MOD_SEL+16,1) == ((slaveconfig & 0x80)>>7)));
+                                (GET_BITS(TIM2->SMCR,TIMER_SLAVE_MOD_SEL+16,1) == ((slaveconfig & 0x80)>>3)));
             break;
         case TIMER_SLAVE_EXT_PRESCLAER: // Multi-bit field (ETPS)
             SET_BITS(TIM2->SMCR,TIMER_SLAVE_EXT_PRESCLAER,2,slaveconfig & 0x03);
@@ -420,6 +420,28 @@ TimerError_t TimerUpdateCountValue(uint32_t TimerCnt)
     }
 
     return TimerErrorStatus;
+}
+
+uint32_t TimerGetCountValue(uint8_t TimerChannelIdx)
+{
+    uint32_t TimerCnt = 0;
+switch(TimerChannelIdx)
+{
+    case 1:
+         TimerCnt = GET_BITS(TIM2->CCR1,TIM_CNT_CNT_Pos,32);
+         break;
+    case 2:
+         TimerCnt = GET_BITS(TIM2->CCR2,TIM_CNT_CNT_Pos,32);
+         break;
+    case 3:
+         TimerCnt = GET_BITS(TIM2->CCR3,TIM_CNT_CNT_Pos,32);
+         break;
+    case 4:
+         TimerCnt = GET_BITS(TIM2->CCR4,TIM_CNT_CNT_Pos,32);
+         break;
+}
+  
+    return TimerCnt;
 }
 
 /************************************************ Timer Prescaler ******************************************************/

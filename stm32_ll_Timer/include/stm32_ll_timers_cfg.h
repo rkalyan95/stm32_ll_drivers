@@ -26,7 +26,16 @@ typedef enum
     INPUT_CAPTURE_FALLING_EDGE,
     INPUT_CAPTURE_RISING_EDGE,
     INPUT_CAPTURE_BOTH_EDGES,
-}Timer_t;
+}TimerInputOutput_t;
+
+typedef enum
+{
+    OUTPUT_COMPARE,
+    INPUT_CAPTURE_TI1,
+    INPUT_CAPTURE_TI2,
+    INPUT_CAPTURE_TRGI,
+    
+}CapCompareMapping_t;
 
 typedef enum
 {
@@ -182,17 +191,15 @@ typedef struct
 
 typedef struct
 {
-    Timer_t TimerType;
+    TimerInputOutput_t TimerType;
+    CapCompareMapping_t CapCompareMapping;
     TimerChannel_t TimerNumber;
     InputCapFilter_t InputCapturFilter;
     OutputCmpMode_t OutCmpMode;
     uint32_t TimerCompareValue;
 }ChannelSpecificConfigs_t;
 
-
-
-
-
+void GetFeedbackValues(uint8_t timerchanIdx , float *dutycycle);
 //void TimerInit(TimerCfg_t *TimerCfg,uint16_t pre , uint32_t arrvalue);
 void TimerInit(TimerSpecificConfigs_t *TimerCfg,ChannelSpecificConfigs_t *ChannelCfg,uint16_t pre , uint32_t arrvalue);
 #endif // STM32_LL_TIMERS_CFG_H

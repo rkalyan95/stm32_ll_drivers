@@ -223,4 +223,5 @@ TimerError_t TimerConfigOptionReg1(Timer2OptionReg1_t BitPos , uint8_t Cfg);
 TimerError_t TimerConfigOptionReg2(Timer2OptionReg2_t BitPos , uint8_t Cfg);
 
 TimerError_t TimerSetDmaAndInterruptSt(TimerStatusReg_t BitPos , uint8_t Cfg);
+uint32_t TimerGetCountValue(uint8_t TimerChannelIdx);
 #endif /* STM32_LL_TIMERS_H */
