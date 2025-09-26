@@ -1,0 +1,130 @@
+@startuml
+
+entity "Err_t" <<Error Types Enum>>
+{
+    +ERROR_OK : 0
+    +ERROR_TXFAILED:1
+    +ERROR_RXFAILED:2
+    +ERROR_TIMEOUT:3
+    +ERROR_NULLPTR : 4
+}
+
+entity "uart_ll_config_t" <<uart_ll_cfg.c && uart_ll_cfg.h>>
+{
+    +baudrate : baudrate_t
+    +datalen : datalen_t
+    +datadir : datadirection_t
+    +fullduplex : duplexity_t
+    +stoptbits : stopbits_t
+    +parity : parity_t
+    +dmatxenable : dmatxenable_t
+    +dmarxenable : dmarxenable_t
+}
+
+entity "uart_hl_config_t" <<uart_hl_cfg.c && uart_hl_cfg.h>>
+{
+    +low_level_configs : const uart_ll_config_t *
+    +TxBuffer  : const uint8_t *
+    +RxBuffer : const uint8_t *
+}
+
+
+
+entity "uart_ll_functions"  <<uart_ll.c & uart_ll.h>>
+{
+    +Err_t Uart_ll_Init(uart_ll_config_t)
+    -Err_t Uart_ll_SetBaudRate(baudrate_t)
+    -Err_t Uart_ll_SetDataLen(datalen_t)
+    -Err_t Uart_ll_SetParity(parity_t)
+    -Err_t Uart_ll_SetStopbits(stopbits_t)
+    -Err_t Uart_ll_EnableDma(dmarxenable_t,dmatxenable_t)
+    -Err_t Uart_ll_SetDataDir(datadirection_t)
+    -Err_t Uart_ll_SetDuplex(duplexity_t)
+    +Err_t Uart_ll_SendByte(uint8_t byte)
+    +Err_t Uart_ll_ReceiveByte(uint8_t *byte)
+
+}
+
+
+entity "uart_hl_functions" <<uart_hl.c && uart_hl.h>>
+{
+    +Err_t uart_hl_ConfigureUart(const uart_hl_config_t)
+    +Err_t uart_hl_FlushTxBuffer(void)
+    +Err_t uart_hl_FlushRxBuffer(void)
+    +Err_t uart_hl_TxComplete(boolean *status)
+    +Err_t uart_hl_RxComplete(boolean *status)
+    +Err_t uart_hl_ErrorStatus(uint32_t *error)
+    +Err_t uart_hl_SendData(void)
+    +Err_t uart_hl_ReceiveData(void)
+}
+
+enum datalen_t
+{
+    DATALEN_7 = 0
+    DATALEN_8 = 1
+    DATALEN_9 = 2
+    DATALEN_INVALID=3
+}
+
+enum datadirection_t
+{
+    MSB_FIRST = 0
+    LSB_FIRST = 1
+    DIR_INVALID = 2
+}
+
+enum duplexity_t
+{
+    FULL_DUPLEX = 0
+    HALF_DUPLEX_TX = 1
+    HALF_DUPLEX_RX = 2
+    DUPLEX_INVALID = 3
+}
+
+enum stopbits_t
+{
+    ONE_STOP_BIT = 0
+    ONE_HALFSTOP_BIT = 1
+    TWO_STOP_BIT = 2
+    INVALID_STOPBIT = 3
+}
+
+enum parity_t
+{
+    ODD_PARITY = 0
+    EVEN_PARITY = 1
+    NONE_PARITY = 2
+}
+
+enum dmarxenable_t
+{
+    DMA_RXENABLE = 0
+    DMA_RXDISABLE = 1
+}
+
+enum dmatxenable_t
+{
+    DMA_TXENABLE = 0
+    DMA_TXDISABLE = 1   
+}
+
+
+uart_ll_functions ..> "uses" uart_ll_config_t
+uart_ll_functions ..> "uses" Err_t
+uart_hl_functions ..> "uses" uart_ll_functions
+uart_hl_functions ..> "uses" uart_hl_config_t
+uart_hl_functions ..> "uses" Err_t
+uart_hl_config_t "has-a" ---|> uart_ll_config_t
+
+uart_ll_config_t ..> datalen_t
+uart_ll_config_t ..> datadirection_t
+uart_ll_config_t ..> stopbits_t
+uart_ll_config_t ..> duplexity_t
+
+uart_ll_config_t ..> dmatxenable_t
+uart_ll_config_t ..> dmarxenable_t
+uart_ll_config_t ..> parity_t
+uart_ll_config_t ..> stopbits_t
+@enduml
+
+

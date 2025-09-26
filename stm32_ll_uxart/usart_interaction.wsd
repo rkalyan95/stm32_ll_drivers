@@ -1,0 +1,67 @@
+@startuml
+
+alt uart_init
+    main  -> uart_hl_functions 
+    database uart_hl_config as uart_highlevel_config
+    uart_hl_functions -> uart_highlevel_config : Read config pointer
+    uart_highlevel_config -> uart_hl_functions : Send config pointer
+    uart_hl_functions -> main : If ERROR_NULLPTR return to main
+    uart_hl_functions -> uart_ll_functions : Go ahead if not NULL
+
+    database uart_ll_config as uart_lowlevel_config
+    uart_ll_functions -> uart_lowlevel_config : Read config pointer
+    uart_lowlevel_config -> uart_ll_functions : Send config pointer
+    uart_ll_functions -> uart_hl_functions : return ERROR_NULLPTR if NULL
+    uart_hl_functions-> main : Cascade Error to Main
+
+    uart_ll_functions -> Uart_ll_Init : go ahead if not NULL
+    Uart_ll_Init -> Uart_ll_Init : RetryCnt = 3\n if failed
+    Uart_ll_Init -> uart_ll_functions : Error Status
+    uart_ll_functions -> uart_hl_functions : Error Status
+    uart_hl_functions -> main : Error Status
+    main -> loggingservice : log error
+end
+
+alt uart_send
+    main  -> uart_hl_functions 
+
+    uart_hl_functions -> uart_highlevel_config : Read Tx pointer
+    uart_highlevel_config -> uart_hl_functions : Send Tx pointer
+    uart_hl_functions -> main : If ERROR_NULLPTR return to main
+    uart_hl_functions -> uart_ll_functions : Go ahead if not NULL
+
+    uart_ll_functions -> uart_lowlevel_config : Read Tx pointer
+    uart_lowlevel_config -> uart_ll_functions : Send Tx pointer
+    uart_ll_functions -> uart_hl_functions : return ERROR_NULLPTR if NULL
+    uart_hl_functions-> main : Cascade Error to Main
+
+    uart_ll_functions -> Uart_ll_SendByte : go ahead if not NULL
+    Uart_ll_SendByte -> Uart_ll_SendByte : RetryCnt = 3\n if failed
+    Uart_ll_SendByte -> uart_ll_functions : Error Status
+    uart_ll_functions -> uart_hl_functions : Error Status
+    uart_hl_functions -> main : Error Status
+    main -> loggingservice : log error
+end
+
+alt uart_receive
+    main  -> uart_hl_functions 
+
+    uart_hl_functions -> uart_highlevel_config : Read Rx pointer
+    uart_highlevel_config -> uart_hl_functions : Send Rx pointer
+    uart_hl_functions -> main : If ERROR_NULLPTR return to main
+    uart_hl_functions -> uart_ll_functions : Go ahead if not NULL
+
+    uart_ll_functions -> uart_lowlevel_config : Read Rx pointer
+    uart_lowlevel_config -> uart_ll_functions : Send Rx pointer
+    uart_ll_functions -> uart_hl_functions : return ERROR_NULLPTR if NULL
+    uart_hl_functions-> main : Cascade Error to Main
+
+    uart_ll_functions -> Uart_ll_ReceiveByte : go ahead if not NULL
+    Uart_ll_ReceiveByte -> Uart_ll_ReceiveByte : RetryCnt = 3\n if failed
+    Uart_ll_ReceiveByte -> uart_ll_functions : Error Status
+    uart_ll_functions -> uart_hl_functions : Error Status
+    uart_hl_functions -> main : Error Status
+    main -> loggingservice : log error
+end
+
+@enduml

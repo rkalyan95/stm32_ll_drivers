@@ -96,6 +96,11 @@ const peripheral_clk_settings peripheralclk=
         .peripheral_id.ahb2_id = APB1_TIM2,
         .peripheral_clksrc = CCIPR_PCLK,
     },
+    {
+        .peripheral_cat = PERIPHERAL_CAT_APB2,
+        .peripheral_id.ahb2_id = APB2_USART1,
+        .peripheral_clksrc = CCIPR_PCLK,
+    },
 };
 
 #define CLOCK_CONFIG_CNT      (sizeof(peripheral_configs)/sizeof(peripheral_configs[0]))

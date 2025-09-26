@@ -13,6 +13,7 @@
 #include "stm32_ll_flash_cfg.h"
 #include "stm32_ll_timers_cfg.h"
 #include "servo.h"
+#include "stm32_ll_usart.h"
 
 btn_evt_t finalBtnEvt;
 led_states_t led_state_main = LED_OFF;
@@ -50,20 +51,28 @@ void main(void)
     NVIC_SetPriority(EXTI15_10_IRQn, 47);
     NVIC_EnableIRQ(EXTI15_10_IRQn);      // Enable the interrupt in the NVIC
     ServoInit();
-    
-    //TurnServo(angle,0);
-    //TurnServo(angle+15.0f,1);
-    //TurnServo(angle+30.0f,2);
-    //TurnServo(angle+45.0f,3);
+    init_usart();
+    delayrndom(500000);
+    printWelcomeMessage();
+
+
     while(1)
     {
         finalBtnEvt = BTN_NONE;
-        finalBtnEvt = handledebouncecrudeway();
+#if 0  
         GetFeedbackValues(1,&dutycycle);
-        if(dutycycle>0.35f && dutycycle<0.38f)
+        if(dutycycle>0.49f && dutycycle<0.51f)
         {
             finalBtnEvt = BTN_PRESSED;
         }
+        else
+        {
+            finalBtnEvt = handledebouncecrudeway();
+
+        }
+#endif     
+        finalBtnEvt = handledebouncecrudeway();
+
         led_state_main = Fsm_Run(finalBtnEvt,led_state_main);
         //GetFeedbackValues(1,&dutycycle);
     }

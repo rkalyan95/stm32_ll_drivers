@@ -1,6 +1,16 @@
 #include "stm32_ll_timers_cfg.h"
 #include "stm32_ll_timers.h"
 #include "servo.h"
+/**
+ * @file servo.c
+ *
+ * @brief Timer configuration for servo motor control
+ *
+ * This file contains the configuration for the timer used to control the servo motor.
+ *
+ * @author Rajat Kalyan
+ * @date 21-09-2025
+ */
 
 TimerSpecificConfigs_t ServoTimer = {
     .MasterModeTrigout = COUNTER_UP,
@@ -35,14 +45,14 @@ ChannelSpecificConfigs_t ServoBottomChannel = {
     .TimerNumber = TIMER_CH3,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 59,
+    .TimerCompareValue = 79,
 };
 
 ChannelSpecificConfigs_t ServoHandChannel = {
     .TimerNumber = TIMER_CH4,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 59,
+    .TimerCompareValue = 79,
 };
 
 

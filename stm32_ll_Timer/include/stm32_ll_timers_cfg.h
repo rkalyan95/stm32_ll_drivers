@@ -185,7 +185,7 @@ typedef struct
     ExtPrescaler_t ExtPrescaler;
     Enable_t IsrEn;
     uint8_t IsrPrio;
-
+    
 }TimerSpecificConfigs_t;
 
 
