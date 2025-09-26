@@ -99,8 +99,7 @@ typedef struct
     volatile uint32_t SCARCNT0    : 1;
     volatile uint32_t SCARCNT1    : 1;
     volatile uint32_t SCARCNT2    : 1;
-    volatile uint32_t WUS0   : 1;
-    volatile uint32_t WUS1   : 1;
+    volatile uint32_t WUS   : 2;
     volatile uint32_t WUFIE   : 1;
     volatile uint32_t UCESM   : 1;
     volatile uint32_t TCBGTIE   : 1;
@@ -279,8 +278,99 @@ typedef union
     stm32_ll_usart_tdr_b B;
 }stm32_ll_usart_tdr_t;
 
+typedef uint32_t baudrate_t;
 
 
+
+typedef enum 
+{
+    error_ok = 0,
+    error_txfailed = 1,
+    error_rxfailed = 2,
+    error_timeout = 3,
+    error_nullptr = 4,
+    error_invalid_parameter = 5,
+}err_t;
+
+typedef enum
+{
+    datalen_7 = 0,
+    datalen_8 = 1,
+    datalen_9 = 2,
+    datalen_invalid=3,
+}datalen_t;
+
+typedef enum 
+{
+    msb_first = 1,
+    lsb_first = 0,
+    dir_invalid = 2,
+}datadirection_t;
+
+typedef enum 
+{
+    full_duplex = 0,
+    half_duplex = 1,
+    duplex_invalid = 2,
+}duplexity_t;
+
+typedef enum
+{
+    one_stop_bit = 0,
+    half_stop_bit = 1,
+    one_halfstop_bit = 2,
+    two_stop_bit = 3,
+    invalid_stopbit = 4,
+}stopbits_t;
+
+typedef enum
+{
+    odd_parity = 1,
+    even_parity = 0,
+    none_parity = 2,
+}parity_t;
+
+typedef enum
+{
+    dma_rxenable = 0,
+    dma_rxdisable = 1,
+}dmarxenable_t;
+
+typedef enum
+{
+    dma_txenable = 0,
+    dma_txdisable = 1,
+}dmatxenable_t;
+
+typedef enum
+{
+    uart_disable = 0,
+    uart_enable = 1
+}Uartenable_t;
+
+typedef enum
+{
+    wakeup_on_address = 0,
+    wakeup_on_start = 2,
+    wakeup_on_rx_not_empty = 3
+}wakeupsource_t;
+
+typedef struct uart_ll_config_
+{
+  baudrate_t  baudrate;
+  datalen_t  datalen;
+  datadirection_t  datadirection;
+  duplexity_t  duplexity;
+  stopbits_t  stopbits;
+  parity_t  parity;
+  dmatxenable_t  dmatxenable;
+  dmarxenable_t  dmarxenable ;
+}uart_ll_config_t;
+
+
+err_t Uart_ll_Init(uart_ll_config_t *uart_ll_config);
+err_t Uart_ll_SendByte(uint8_t byte);
+err_t Uart_ll_ReceiveByte(uint8_t *byte);
 void init_usart(void);
 void deinit_usart(void);
 void printWelcomeMessage(void);
