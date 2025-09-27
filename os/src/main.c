@@ -72,7 +72,14 @@ void main(void)
         }
 #endif     
         finalBtnEvt = handledebouncecrudeway();
-
+        if(finalBtnEvt == BTN_PRESSED)
+        {
+            printDebugString("Btn Was Pressed\r\n");
+        }
+        else if(finalBtnEvt == BTN_RELEASED)
+        {
+            printDebugString("Btn Was Released\r\n");
+        }
         led_state_main = Fsm_Run(finalBtnEvt,led_state_main);
         //GetFeedbackValues(1,&dutycycle);
     }

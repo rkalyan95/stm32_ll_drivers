@@ -285,12 +285,26 @@ typedef uint32_t baudrate_t;
 typedef enum 
 {
     error_ok = 0,
-    error_txfailed = 1,
-    error_rxfailed = 2,
-    error_timeout = 3,
-    error_nullptr = 4,
-    error_invalid_parameter = 5,
+    error_nok = 1,
+    error_txfailed = 2,
+    error_rxfailed = 3,
+    error_timeout = 4,
+    error_nullptr = 5,
+    error_invalid_parameter = 6,
 }err_t;
+
+typedef enum 
+{
+    uart_noerror,
+    uart_parityerror,
+    uart_framingerror,
+    uart_startbitnoise,
+    uart_overrunerror,
+    uart_rxempty,
+    uart_txempty,
+    uart_busy,
+    uart_invalid_parameter
+}uarterror_t;
 
 typedef enum
 {
@@ -372,7 +386,7 @@ err_t Uart_ll_Init(uart_ll_config_t *uart_ll_config);
 err_t Uart_ll_SendByte(uint8_t byte);
 err_t Uart_ll_ReceiveByte(uint8_t *byte);
 void init_usart(void);
-void deinit_usart(void);
 void printWelcomeMessage(void);
+void printDebugString(const uint8_t *debugmessage);
 #endif
 

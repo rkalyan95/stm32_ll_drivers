@@ -44,6 +44,8 @@ entity "uart_ll_functions"  <<uart_ll.c & uart_ll.h>>
     -Err_t Uart_ll_SetDuplex(duplexity_t duplex)
     -Err_t Uart_ll_Enable(uartenable_t enable)
     -Err_t Uart_ll_WakeupSource(Wakeupsource_t wakeup)
+    -Err_t Uart_ll_GetStatus(uarterror_t uarterr)
+    -Err_t Uart_ll_ClearStatus(uarterror_t uarterr)
     -Err_t Uart_ll_FlushTx(void)
     -Err_t Uart_ll_FlushRx(void)
     +Err_t Uart_ll_SendByte(uint8_t byte)
@@ -64,6 +66,16 @@ entity "uart_hl_functions" <<uart_hl.c && uart_hl.h>>
     +Err_t uart_hl_ReceiveData(void)
 }
 
+enum uarterror_t
+{
+    uart_parityerror,
+    uart_framingerror,
+    uart_startbitnoise,
+    uart_overrunerror,
+    uart_rxnotempty,
+    uart_txempty,
+    uart_busy,
+}
 enum uartenable_t
 {
     uart_disable = 0,
@@ -130,6 +142,7 @@ enum dmatxenable_t
 
 uart_ll_functions ..> "uses" uart_ll_config_t
 uart_ll_functions ..> "uses" Err_t
+uart_ll_functions ..> "uses" uarterror_t
 uart_hl_functions ..> "uses" uart_ll_functions
 uart_hl_functions ..> "uses" uart_hl_config_t
 uart_hl_functions ..> "uses" Err_t

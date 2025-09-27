@@ -1,5 +1,5 @@
 #include "stm32_ll_usart.h"
-
+#include <stddef.h>
 
   volatile  stm32_ll_usart_cr1_t *usart_cr1 =  ((volatile stm32_ll_usart_cr1_t *) (USART1_BASE + 0x00));
   volatile  stm32_ll_usart_cr2_t *usart_cr2 =  ((volatile stm32_ll_usart_cr2_t *) (USART1_BASE + 0x04));
@@ -19,11 +19,11 @@ const uint8_t bootMsg[] = "Starting up.....Welcome to Bitwise\r\n";
 
 uart_ll_config_t uart_ll_config = {
     .baudrate = 9600,
-    .datalen = datalen_8,
+    .datalen = datalen_9, //8 bits data 1 bit parity as per datasheet
     .datadirection = lsb_first,
     .duplexity = full_duplex,
     .stopbits = one_stop_bit,
-    .parity = none_parity,
+    .parity = even_parity,
     .dmatxenable = dma_txdisable,
     .dmarxenable = dma_rxdisable
 };
@@ -33,6 +33,7 @@ static err_t Uart_ll_SetBaudRate(baudrate_t baudrate)
 {
   err_t err_st=error_ok;
   usart_brr->B.BRR = 0x09C4;  //9600baud
+  while(usart_brr->B.BRR != 0x09C4);
   return err_st;
 }
 
@@ -67,6 +68,7 @@ static err_t Uart_ll_SetParity(parity_t parity)
   {
     usart_cr1->B.PCE = 1;
     usart_cr1->B.PS = parity;
+    while(usart_cr1->B.PCE != 1 && usart_cr1->B.PS != parity);
   }
   else
   {
@@ -81,6 +83,7 @@ static err_t Uart_ll_SetStopbits(stopbits_t stopbits)
   if(stopbits!=invalid_stopbit)
   {
     usart_cr2->B.STOP = stopbits;
+    while(usart_cr2->B.STOP != stopbits);
   }
   else
   {
@@ -101,6 +104,7 @@ static err_t Uart_ll_SetDataDir(datadirection_t datadir)
   if(datadir!=dir_invalid)
   {
     usart_cr2->B.MSBFIRST = datadir;
+    while(usart_cr2->B.MSBFIRST != datadir);
   }
   else
   {
@@ -115,9 +119,7 @@ static err_t Uart_ll_SetDuplex(duplexity_t duplex)
   if(duplex!=duplex_invalid)
   {
     usart_cr3->B.HDSEL = duplex;
-    usart_cr1->B.TE = 1;
-    usart_cr1->B.RE = 1;
-    while(usart_cr1->B.TE!=1 && usart_cr1->B.RE!=1);
+
   }
   else
   {
@@ -129,16 +131,86 @@ static err_t Uart_ll_SetDuplex(duplexity_t duplex)
 static err_t Uart_ll_Enable(Uartenable_t enable)
 {
  err_t err_st=error_ok;
- usart_cr1->B.UE = 1;
- while(usart_cr1->B.UE != 1);
+  usart_cr1->B.TE = enable;
+  usart_cr1->B.RE = enable;
+  while(usart_cr1->B.TE!=1 && usart_cr1->B.RE!=1);
+ usart_cr1->B.UE = enable;
+ while(usart_cr1->B.UE != enable);
  return err_st;
 }
+
+
 static err_t Uart_ll_WakeupSource(wakeupsource_t wakeup)
 {
  err_t err_st=error_ok;
  usart_cr3->B.WUS = wakeup;
+ while(usart_cr3->B.WUS != wakeup);
  return err_st;
 }
+
+static err_t Uart_ll_ClearStatus(uarterror_t uarterr)
+{
+  err_t err_st = error_ok;
+ switch(uarterr)
+ {
+  case uart_parityerror:
+    usart_icr->B.PECF = 1;
+    break;
+  case uart_framingerror:
+    usart_icr->B.FECF = 1;
+    break;
+  case uart_startbitnoise:
+    usart_icr->B.NCF = 1;
+    break;
+  case uart_overrunerror:
+    usart_icr->B.ORECF = 1;
+    break;
+  case uart_rxempty:
+    usart_rqr->B.RXFRQ = 1;
+    break;
+  case uart_txempty:
+    usart_rqr->B.TXFRQ = 1;
+    break;
+  default:
+    err_st = error_invalid_parameter;
+    break;
+ }
+  return err_st;
+}
+static err_t Uart_ll_GetUartStatus(uarterror_t uarterr)
+{
+ err_t err_st = error_ok;
+ 
+ switch(uarterr)
+ {
+  case uart_parityerror:
+    err_st = (usart_isr->B.PE==1)?(error_nok):(error_ok);
+    break;
+  case uart_framingerror:
+    err_st = (usart_isr->B.FE==1)?(error_nok):(error_ok);
+    break;
+  case uart_startbitnoise:
+    err_st = (usart_isr->B.NF==1)?(error_nok):(error_ok);
+    break;
+  case uart_overrunerror:
+    err_st = (usart_isr->B.ORE==1)?(error_nok):(error_ok);
+    break;
+  case uart_rxempty:
+    err_st = (usart_isr->B.RXNE==1)?(error_ok):(error_nok);
+    break;
+  case uart_txempty:
+    err_st = (usart_isr->B.TXE==1)?(error_ok):(error_nok);
+    break;
+  case uart_busy:
+    err_st = (usart_isr->B.BUSY==1)?(error_nok):(error_ok);
+    break;
+  default:
+    err_st = error_invalid_parameter;
+    break;
+ }
+ return err_st;
+}
+
 
 err_t Uart_ll_FlushTx(void)
 {
@@ -155,10 +227,20 @@ err_t Uart_ll_FlushRx(void)
 err_t Uart_ll_SendByte(uint8_t byte)
 {
  err_t err_st=error_ok;
+
+ if(Uart_ll_GetUartStatus(uart_txempty)==error_ok)
+    {
+      Uart_ll_ClearStatus(uart_txempty);
+    }
+  else
+  {
+    return error_txfailed;
+  }
+
  usart_tdr->B.TDR = byte;
  while(usart_isr->B.TC != 1);
  usart_isr->B.TC = 0;
- 
+
  return err_st;
 }
 
@@ -175,6 +257,10 @@ err_t Uart_ll_ReceiveByte(uint8_t *byte)
 err_t Uart_ll_Init(uart_ll_config_t *uart_ll_config)
 {
   err_t err_st=error_ok;
+  if(uart_ll_config==NULL)
+  {
+    return error_nullptr;
+  }
   err_st = Uart_ll_SetBaudRate(uart_ll_config->baudrate);
   err_st = Uart_ll_SetDataLen(uart_ll_config->datalen);
   err_st = Uart_ll_SetDataDir(uart_ll_config->datadirection);
@@ -191,24 +277,36 @@ void init_usart(void)
 {
 
   Uart_ll_Init(&uart_ll_config);
-
 }
 
 void printWelcomeMessage(void)
 {
-  uint32_t bytes =0;
+  uint32_t bytes = 0;
+   err_t err_st;
   while(bootMsg[bytes]!=0)
   {
-    Uart_ll_SendByte(bootMsg[bytes]);
-    bytes++;
+      err_st = Uart_ll_SendByte(bootMsg[bytes]);
+      if(err_st==error_ok)
+      {
+        bytes++;
+      }
+      
+    }
+
   }
 
-}
-
-
-
-
-void deinit_usart(void)
+void printDebugString(const uint8_t *debugmessage)
 {
+  uint32_t bytes = 0;
+  err_t err_st;
+  while(debugmessage[bytes]!=0)
+  {
+      err_st = Uart_ll_SendByte(debugmessage[bytes]);
+      if(err_st==error_ok)
+      {
+        bytes++;
+      }
+      
+    }
 
-}
+  }
