@@ -300,7 +300,7 @@ typedef enum
     uart_framingerror,
     uart_startbitnoise,
     uart_overrunerror,
-    uart_rxempty,
+    uart_rxnotempty,
     uart_txempty,
     uart_busy,
     uart_invalid_parameter
@@ -381,12 +381,30 @@ typedef struct uart_ll_config_
   dmarxenable_t  dmarxenable ;
 }uart_ll_config_t;
 
+typedef void (*sendresponse_t)(const uint8_t *ptr);
+typedef void (*callback_t)(void);
+typedef struct uartcmddb_
+{
+    const uint8_t *cmd;
+    const uint8_t *response;
+    sendresponse_t function;
+    callback_t cb;
+
+}uartcmddb_t;
+
 
 err_t Uart_ll_Init(uart_ll_config_t *uart_ll_config);
 err_t Uart_ll_SendByte(uint8_t byte);
 err_t Uart_ll_ReceiveByte(uint8_t *byte);
 void init_usart(void);
-void printWelcomeMessage(void);
-void printDebugString(const uint8_t *debugmessage);
+void printdebugstring(const uint8_t *debugmessage);
+err_t readuntillnewline(uint8_t *buffer);
+
+void getevent(void);
+err_t sendresponse(uint8_t *ptr);
+void runfsm(void);
+
+void turnonled(void);
+void turnoffled(void);
 #endif
 

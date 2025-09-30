@@ -25,7 +25,6 @@ typedef struct
     execution_t Dispatch;
 }Fsm_t;
 
-
 led_states_t Fsm_Run(btn_evt_t evt , led_states_t currentstate);
 btn_evt_t handledebouncecrudeway(void);
 #endif // SYSTEM_FSM_H

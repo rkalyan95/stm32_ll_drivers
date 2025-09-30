@@ -1,0 +1,18 @@
+@startuml
+
+[*] --> ReadNewCmd
+
+ReadNewCmd  --> SendVersion : "stm --version"
+SendVersion --> SendResponse : "send response"
+
+ReadNewCmd --> LedOn : "stm led --on"
+LedOn -->  SendResponse :"send response"
+
+ReadNewCmd --> LedOff : "stm led --off"
+LedOff --->  SendResponse : "send response"
+
+SendResponse -->  ReadNewCmd : "backtosource"
+ReadNewCmd --> ReadNewCmd : "invalid"
+
+
+@enduml

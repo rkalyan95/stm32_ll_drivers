@@ -8,6 +8,7 @@ COMMON_INCLUDES := \
     -I../CMSIS/Core/Include \
     -I../Device/ARM/ARMCM4/Include \
     -I../include/stm32l433 \
+    -I../stm32_ll_gpio/include \
     -I./include \
     -I ../os/include\
     -I./src

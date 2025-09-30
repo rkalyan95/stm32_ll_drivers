@@ -15,12 +15,18 @@
 #include "servo.h"
 #include "stm32_ll_usart.h"
 
+
 btn_evt_t finalBtnEvt;
 led_states_t led_state_main = LED_OFF;
 FirmwareVersion_t Version;
 
+uint8_t readmessage[256];
+
 float angle=0.0f;
 float dutycycle = 0.0f;
+
+
+
 static void delayrndom(uint32_t dly)
 {
     for(uint32_t i=0;i<dly;i++)
@@ -52,8 +58,7 @@ void main(void)
     NVIC_EnableIRQ(EXTI15_10_IRQn);      // Enable the interrupt in the NVIC
     ServoInit();
     init_usart();
-    delayrndom(500000);
-    printWelcomeMessage();
+    printdebugstring("Welcome to STM32 UART\r\n");
 
 
     while(1)
@@ -72,15 +77,38 @@ void main(void)
         }
 #endif     
         finalBtnEvt = handledebouncecrudeway();
-        if(finalBtnEvt == BTN_PRESSED)
-        {
-            printDebugString("Btn Was Pressed\r\n");
-        }
-        else if(finalBtnEvt == BTN_RELEASED)
-        {
-            printDebugString("Btn Was Released\r\n");
-        }
+        
         led_state_main = Fsm_Run(finalBtnEvt,led_state_main);
+        runfsm();
+        /*err_t err_st = readuntillnewline(readmessage);
+        
+        if(err_st==error_ok)
+        {
+            str_allsmallcase(readmessage);
+            if(str_equal(readmessage,"stm led --on\r"))
+            {
+                Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);
+                printdebugstring("Led Now On\r");
+                readmessage[0] = '\0';
+            }
+            else if(str_equal(readmessage,"stm led --off\r"))
+            {
+                Gpio_SetLevel(led_pin.port,led_pin.pin,LOW);
+                printdebugstring("Led Now Off\r");
+                readmessage[0] = '\0';
+            }
+            else if(str_equal(readmessage,"stm --version\r"))
+            {
+                printdebugstring("stm32 low level driver v0.0.1\r");
+                readmessage[0] = '\0';
+            }
+            else
+            {
+                printdebugstring("Invalid Command\r");
+                readmessage[0] = '\0';
+            }
+        }
+            */
         //GetFeedbackValues(1,&dutycycle);
     }
 

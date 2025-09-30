@@ -88,6 +88,17 @@ const portpintconfigs_t usart1tx_pin = {
     .pin_interrupttype = ISR_NONE,
 };
 
+const portpintconfigs_t usart1rx_pin = {
+    .port = GPIO_PORT_A,
+    .pin = GPIO_PIN_10,
+    .pinType = ALTERNATE_FUNCTION,
+    .pullconfig = GPIO_PULL_DOWN,
+    .outputpushpull = GPIO_OTYPE_PUSHPULL,
+    .initalstate = LOW,
+    .alternate_functionality = AF_7,
+    .pin_speed = VERYHIGH_SPEED,
+    .pin_interrupttype = ISR_NONE,
+};
 
 
 const portpintconfigs_t button_pin = {
@@ -103,7 +114,7 @@ const portpintconfigs_t button_pin = {
 };
 
 bool level = HIGH;
-const portpintconfigs_t Stm32NucleoConfigsPortB[] = {led_pin,button_pin,ledred_pin,ledblue_pin,ledyellow_pin,ledgreen_pin,logic_pin,usart1tx_pin};
+const portpintconfigs_t Stm32NucleoConfigsPortB[] = {led_pin,button_pin,ledred_pin,ledblue_pin,ledyellow_pin,ledgreen_pin,logic_pin,usart1tx_pin,usart1rx_pin};
 
 #define CONFIG_CNT     (sizeof(Stm32NucleoConfigsPortB)/sizeof(Stm32NucleoConfigsPortB[0]))
 

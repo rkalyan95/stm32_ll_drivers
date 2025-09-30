@@ -1,0 +1,51 @@
+@startuml
+
+entity "callback_t"
+{
+    +callback : void (*funcptr)(const uint8_t *cmd);
+}
+
+entity "uartcmddb_t"
+{
+    +command : const uint8_t *cmd;
+    +response : const uint8_t *response;
+}
+
+entity "uartcmd_t"
+{
+    +commandrespdb : uartcmddb_t *cmddb;
+    +rxedcommand : uint8_t *rxedcmd;
+    +callback : callback_t callback;
+}
+
+enum stateuartfsm_t
+{
+    stateuartfsmversion = 0,
+    stateuartfsmledon = 1,
+    stateuartfsmledoff = 2,
+    stateuartfsmreadnewline = 3,
+}
+
+enum uartcmdevt_t
+{
+    uartcmdevt_version = 0,
+    uartcmdevt_ledon = 1,
+    uartcmdevt_off = 2,
+    uartcmdevt_readnewline = 3,  
+}
+
+entity "uartfsm_t" 
+{
+    +currentstate : stateuartfsm_t currentstate;
+    +event : uartcmdevt_t commandevent;
+    +nextstate : stateuartfsm_t nextstate;
+    +dispatch :  sendresponse_t function;
+}
+
+uartcmd_t --> callback_t
+uartcmd_t --> uartcmddb_t
+uartfsm_t --> stateuartfsm_t
+uartfsm_t --> uartcmdevt_t
+
+
+@enduml
