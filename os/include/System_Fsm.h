@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdint.h>
+
 typedef void (*execution_t)(void);
 
 typedef enum
@@ -30,7 +31,7 @@ typedef struct
 }Fsm_t;
 
 typedef err_t (*sendresponse_t)(uint8_t *ptr);
-typedef void (*callback_t)(void);
+typedef void (*callback_t)(uint8_t *param);
 
 typedef struct uartcmddb_
 {
@@ -47,9 +48,11 @@ void UartFsm_Run(void);
 
 void LedOn(void);
 void LedOff(void);
-void getledstate(void);
-void servoanglerxed(void);
-
+void setledon(uint8_t *param);
+void setledoff(uint8_t *param);
+void getledstate(uint8_t *param);
+void servoanglerxed(uint8_t *param);
+void servofeedback(uint8_t *param);
 led_states_t Fsm_Run(btn_evt_t evt , led_states_t currentstate);
 btn_evt_t handledebouncecrudeway(void);
 void LedBtnFsm_Run(void);

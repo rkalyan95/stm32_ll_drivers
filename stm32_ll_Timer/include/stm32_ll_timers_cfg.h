@@ -199,7 +199,7 @@ typedef struct
     uint32_t TimerCompareValue;
 }ChannelSpecificConfigs_t;
 
-void GetFeedbackValues(uint8_t timerchanIdx , float *dutycycle);
+uint8_t GetFeedbackValues(uint8_t timerchanIdx , float *dutycycle);
 //void TimerInit(TimerCfg_t *TimerCfg,uint16_t pre , uint32_t arrvalue);
 void TimerInit(TimerSpecificConfigs_t *TimerCfg,ChannelSpecificConfigs_t *ChannelCfg,uint16_t pre , uint32_t arrvalue);
 #endif // STM32_LL_TIMERS_CFG_H

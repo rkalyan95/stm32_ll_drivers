@@ -6,6 +6,8 @@
 #include "stm32l433_ll_gpio.h"
 #include "stm32_ll_exti.h"
 #include "System_Fsm.h"
+#include "servo.h"
+#include <stdlib.h>
 
 #define DEBOUNCE_TIMER   4000
 
@@ -20,17 +22,18 @@ uint8_t btn_level;
 
 btn_evt_t finalBtnEvt;
 led_states_t led_state_main = LED_OFF;
+uint8_t dc;
 
-
-
-
+float dutycurrent=0.0f;
+float dutysaved=0.0f;
 uartfsm_t uartfsm[] = 
 {
   {.prefixcmd = 0,.cmd = "stm --version\r", .response = "version 1.0\r\n",.function = sendresponse,.cb = NULL},
-  {.prefixcmd = 0,.cmd = "stm led --on\r", .response = "led on\r\n",.function = sendresponse,.cb = LedOn},
-  {.prefixcmd = 0,.cmd = "stm led --off\r", .response = "led off\r\n",.function = sendresponse,.cb = LedOff},
+  {.prefixcmd = 0,.cmd = "stm led --on\r", .response = "led on\r\n",.function = sendresponse,.cb = setledon},
+  {.prefixcmd = 0,.cmd = "stm led --off\r", .response = "led off\r\n",.function = sendresponse,.cb = setledoff},
   {.prefixcmd = 0,.cmd = "stm get --led\r", .response = "led reading state..\r\n",.function = sendresponse,.cb = getledstate},
   {.prefixcmd = 1,.cmd = "stm servo=", .response = "setting servo angle..\r\n",.function = sendresponse,.cb = servoanglerxed},
+  {.prefixcmd = 0,.cmd = "stm --servo\r", .response = "reading servo dc..\r\n",.function = sendresponse,.cb = servofeedback},
 };
 
 #define commanddbsize (sizeof(uartfsm)/sizeof(uartfsm[0]))
@@ -188,7 +191,7 @@ err_t sendresponse(uint8_t *ptr)
    printdebugstring((const uint8_t *)ptr);
 }
 
-void getledstate(void)
+void getledstate(uint8_t *param)
 {
     uint8_t state = 0;
     state =Gpio_GetPin(led_pin.port,led_pin.pin);
@@ -202,14 +205,87 @@ void getledstate(void)
     }
 }
 
-void servoanglerxed(void)
+static float basic_atof(const char *s)
 {
-  printdebugstring("servo angle rxed\r\n");
+    float result = 0.0f;
+    float scale = 1.0f; // Used to track powers of 10 after the decimal
+    int sign = 1;
+    bool after_decimal = false;
+
+    // 1. Handle Sign
+    if (*s == '-') {
+        sign = -1;
+        s++;
+    } else if (*s == '+') {
+        s++;
+    }
+
+    // 2. Process Digits
+    while (*s != '\0') 
+    {
+        if (*s == '.') {
+            // Found the decimal point
+            if (after_decimal) break; // Should not happen in well-formed input
+            after_decimal = true;
+        } 
+        else if (*s >= '0' && *s <= '9') {
+            
+            if (after_decimal) {
+                // Digits after the decimal point
+                scale /= 10.0f; // Scale becomes 0.1, 0.01, 0.001, etc.
+                result = result + (*s - '0') * scale;
+            } else {
+                // Digits before the decimal point
+                result = result * 10.0f + (*s - '0');
+            }
+        } 
+        else {
+            // Stop on any non-digit/non-decimal character (like 'e', 'f', space, etc.)
+            break; 
+        }
+        s++;
+    }
+
+    // 3. Return the signed result
+    return sign * result;
 }
 
 
-static int is_prefix_of(const char *haystack, const char *needle)
+void servoanglerxed(uint8_t *param)
 {
+  uint8_t str[256];
+  float anglef = 0.0f;
+  float dutycycle = 0.0f;
+  anglef = basic_atof((const char *)param);
+  TurnServo(anglef,2);
+  printdebugstring("Updated Servo\r\n");
+}
+
+void servofeedback(uint8_t *param)
+{
+
+    dc = (uint8_t)(dutysaved*100.0f);
+    //printdebugstring("Servo Feedback Rxed\r\n");
+    Uart_ll_SendByte(dc+0x30);
+    Uart_ll_SendByte(0x0D);
+
+}
+
+
+
+void setledon(uint8_t *param)
+{
+  LedOn();
+}
+
+void setledoff(uint8_t *param)
+{
+  LedOff();
+}
+
+static int is_prefix_of(const char *haystack, const char *needle,uint8_t *outstr)
+{
+    uint8_t idx = 0;
     while (*needle != '\0')
     {
         if (*haystack != *needle)
@@ -226,14 +302,33 @@ static int is_prefix_of(const char *haystack, const char *needle)
         needle++;
     }
 
+    while(*haystack!='\r')
+    {
+       outstr[idx++] = *haystack;
+       haystack++;
+    }
+    outstr[idx] = '\0';
+
     return 1;
 }
 
 
 void UartFsm_Run(void)
 {
+    uint8_t servorx[8];
     bool matchfound=0;
+    
     err_t err_st = readuntillnewline(readmymessage);
+    dutycurrent = GetDutyCycle(1);
+    if(dutycurrent!=-1)
+    {
+      if(dutysaved!=dutycurrent)
+      {
+          dutysaved = dutycurrent;
+      }
+    }
+
+
     if(err_st==error_ok)
     {
       str_allsmallcase(readmymessage);
@@ -250,20 +345,20 @@ void UartFsm_Run(void)
               }
               if(uartfsm[i].cb!=NULL )
               {
-                 uartfsm[i].cb();
+                 uartfsm[i].cb(NULL);
               }
               break;
           }
         }
         else if(uartfsm[i].prefixcmd == 1)
         {
-          if(is_prefix_of(readmymessage, uartfsm[i].cmd) == 1)
+          if(is_prefix_of(readmymessage, uartfsm[i].cmd,servorx) == 1)
           {
             
               matchfound = 1;
               if(uartfsm[i].cb!=NULL )
               {
-                 uartfsm[i].cb();
+                 uartfsm[i].cb(servorx);
               }
               break;
           }

@@ -203,22 +203,27 @@ void TimerInit(TimerSpecificConfigs_t *TimerCfg,ChannelSpecificConfigs_t *Channe
     NVIC_EnableIRQ(TIM2_IRQn);      // Enable the interrupt in the NVIC
 }
 
-void GetFeedbackValues(uint8_t timerchanIdx , float *dutycycle)
+uint8_t GetFeedbackValues(uint8_t timerchanIdx , float *dutycycle)
 {
     static uint32_t previousCnt = 0;
     static uint32_t currentCnt = 0;
     *dutycycle = 0.0f;
 
-    if(isr_occured==1)
+    if(isr_occured>=1)
     {
         previousCnt = TimerGetCountValue(timerchanIdx);
+        if(isr_occured==2)
+        {
+            isr_occured = 0;
+            currentCnt = previousCnt + TimerGetCountValue(timerchanIdx);
+            *dutycycle = (float)(currentCnt-previousCnt)/(160.0f);
+            return 1;
+        }
+        return 0;
     }
-    else if(isr_occured==2)
-    {
-        isr_occured = 0;
-        currentCnt = previousCnt + TimerGetCountValue(timerchanIdx);
-        *dutycycle = (float)(currentCnt-previousCnt)/160;
-    }
+
+
+
 
 }
 void __isr_tim2(void)

@@ -38,21 +38,21 @@ ChannelSpecificConfigs_t ServoMiddleChannel = {
     .TimerNumber = TIMER_CH2,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 59,
+    .TimerCompareValue = 10,
 };
 
 ChannelSpecificConfigs_t ServoBottomChannel = {
     .TimerNumber = TIMER_CH3,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 79,
+    .TimerCompareValue = 10,
 };
 
 ChannelSpecificConfigs_t ServoHandChannel = {
     .TimerNumber = TIMER_CH4,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 79,
+    .TimerCompareValue = 10,
 };
 
 
@@ -69,9 +69,21 @@ void ServoInit(void)
 void TurnServo(float angle,uint8_t chIdx)
 {
     float timeMs=0.f;
-
+    
     timeMs = (float)SERVOANGLE_TOMS(angle);
 
     uint32_t ccr = (uint32_t)MS_TO_TICKS(timeMs);
-    TimerUpdateCompareValue(ServoTopChannel.TimerNumber, ccr);
+    TimerUpdateCompareValue(ServoMiddleChannel.TimerNumber, ccr);
+    
+    return ;
+
+}
+
+float GetDutyCycle(uint8_t chIdx)
+{
+    uint8_t flag = 0;
+    float dutycycle = 0.0f;
+    flag = GetFeedbackValues(chIdx,&dutycycle);
+    if(flag==1){ return dutycycle;}
+    else { return -1;}
 }

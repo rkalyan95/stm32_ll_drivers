@@ -29,5 +29,6 @@
 
 void ServoInit(void);
 void TurnServo(float angle,uint8_t chIdx);
+float GetDutyCycle(uint8_t chIdx);
 
 #endif  // SERVO_H_

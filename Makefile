@@ -18,7 +18,7 @@ TARGET := stm32_ll_nucleo.elf
 # -lc: Link against the standard C library (libc.a from newlib-nano).
 # -lgcc: Link against the GCC compiler support library (libgcc.a).
 # These two are crucial when -nostdlib is used and you need functions like memcpy/memset.
-LDFLAGS := -T $(LINKER_SCRIPT) -nostdlib -Wl,-Map=$(TARGET).map -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,--start-group -lc -lgcc -Wl,--end-group
+LDFLAGS := -T $(LINKER_SCRIPT) -nostdlib -Wl,-Map=$(TARGET).map -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,--start-group -lm -lnosys -lc -lgcc -Wl,--end-group
 ARCH_FLAGS := -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 # --- Source Files for each module (relative to project root) ---
 # Define all source files here. The sub-Makefiles will use these for compilation.

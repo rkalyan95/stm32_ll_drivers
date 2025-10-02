@@ -53,6 +53,7 @@ SECTIONS
 		. = ALIGN(4);
 
 		_ebss = .;
+		
 	}>SRAM
 
 	    /* Define the end of stack (top address of SRAM) */
