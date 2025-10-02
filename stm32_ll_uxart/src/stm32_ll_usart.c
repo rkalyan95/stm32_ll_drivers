@@ -20,7 +20,7 @@ volatile  stm32_ll_usart_tdr_t *usart_tdr =  ((volatile stm32_ll_usart_tdr_t *) 
 
 
 const uint8_t bootMsg[] = "Starting up.....Welcome to Bitwise\r\n";
-uint8_t readmymessage[256];
+
 
 uart_ll_config_t uart_ll_config = {
     .baudrate = 9600,
@@ -34,115 +34,7 @@ uart_ll_config_t uart_ll_config = {
 };
 
 
-uartcmddb_t uartcmddb[] = 
-{
-  {.cmd = "stm --version\r", .response = "version 1.0\r\n",.function = sendresponse,.cb = NULL},
-  {.cmd = "stm led --on\r", .response = "led on\r\n",.function = sendresponse,.cb = turnonled},
-  {.cmd = "stm led --off\r", .response = "led off\r\n",.function = sendresponse,.cb = turnoffled},
-};
 
-#define commanddbsize (sizeof(uartcmddb)/sizeof(uartcmddb[0]))
-
-
-static uint32_t str_len(const char *s1)
-{
-  uint32_t len=0;
-  while(*s1!='\0')
-  {
-    len++;
-    s1++;
-  }
-
-  return len;
-
-}
-static bool str_equal(const char *s1 , const char *s2)
-{
-  if(str_len(s1) !=  str_len(s2))
-  {
-    return false;
-  }
-  
-  while((*s1 != '\0') && (*s2!='\0'))
-  {
-    if(*s1 != *s2)
-    {
-      return false;
-    }
-
-    s1++;
-    s2++;
-  }
-
-  return true;
-}
-
-static void str_allsmallcase(char *s1)
-{
-    while(*s1!='\0')
-    {
-        if(*s1>='A' && *s1<='Z')
-        {
-            *s1=*s1+32;
-        }
-        s1++;
-    }
-}
-
-
-err_t sendresponse(uint8_t *ptr)
-{
-   printdebugstring((const uint8_t *)ptr);
-}
-
-
-void turnonled(void)
-{
-   Gpio_SetLevel(led_pin.port,led_pin.pin,HIGH);
-}
-void turnoffled(void)
-{
-  Gpio_SetLevel(led_pin.port,led_pin.pin,LOW);
-}
-
-
-void getevent(void)
-{
-    bool matchfound=0;
-    err_t err_st = readuntillnewline(readmymessage);
-    if(err_st==error_ok)
-    {
-      for(uint32_t i=0;i<commanddbsize;i++)
-      {
-          if(str_equal(readmymessage,uartcmddb[i].cmd))
-          {
-              matchfound = 1;
-              uartcmddb[i].function(uartcmddb[i].response);
-              if(uartcmddb[i].cb!=NULL)
-              {
-                 uartcmddb[i].cb();
-              }
-              break;
-          }
-          else
-          {
-          
-          }
-      }
-      if(matchfound==0)
-      {
-        printdebugstring("Invalid command\r\n");
-      }
-      
-    }
-
-}
-
-
-void runfsm(void)
-{
-    getevent();
-}
 static err_t Uart_ll_SetBaudRate(baudrate_t baudrate)
 {
   err_t err_st=error_ok;
@@ -512,7 +404,6 @@ err_t Uart_ll_Init(uart_ll_config_t *uart_ll_config)
 
 void init_usart(void)
 {
-
   Uart_ll_Init(&uart_ll_config);
 }
 
@@ -520,14 +411,19 @@ void init_usart(void)
 void printdebugstring(const uint8_t *debugmessage)
 {
   uint32_t bytes = 0;
+  uint8_t retrycount=0;
   err_t err_st;
-  while(debugmessage[bytes]!=0)
+  while(debugmessage[bytes]!=0 && retrycount<MAX_RETRY)
   {
       err_st = Uart_ll_SendByte(debugmessage[bytes]);
       if(err_st==error_ok)
       {
         bytes++;
       }
+      else
+    {
+      retrycount++;
+    }
   }
 
 }
