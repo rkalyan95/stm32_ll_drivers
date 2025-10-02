@@ -34,6 +34,7 @@ typedef void (*callback_t)(void);
 
 typedef struct uartcmddb_
 {
+    bool prefixcmd;
     const uint8_t *cmd;
     const uint8_t *response;
     sendresponse_t function;
@@ -47,6 +48,7 @@ void UartFsm_Run(void);
 void LedOn(void);
 void LedOff(void);
 void getledstate(void);
+void servoanglerxed(void);
 
 led_states_t Fsm_Run(btn_evt_t evt , led_states_t currentstate);
 btn_evt_t handledebouncecrudeway(void);

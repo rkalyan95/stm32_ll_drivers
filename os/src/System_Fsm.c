@@ -26,10 +26,11 @@ led_states_t led_state_main = LED_OFF;
 
 uartfsm_t uartfsm[] = 
 {
-  {.cmd = "stm --version\r", .response = "version 1.0\r\n",.function = sendresponse,.cb = NULL},
-  {.cmd = "stm led --on\r", .response = "led on\r\n",.function = sendresponse,.cb = LedOn},
-  {.cmd = "stm led --off\r", .response = "led off\r\n",.function = sendresponse,.cb = LedOff},
-  {.cmd = "stm get --led\r", .response = "led reading state..\r\n",.function = sendresponse,.cb = getledstate},
+  {.prefixcmd = 0,.cmd = "stm --version\r", .response = "version 1.0\r\n",.function = sendresponse,.cb = NULL},
+  {.prefixcmd = 0,.cmd = "stm led --on\r", .response = "led on\r\n",.function = sendresponse,.cb = LedOn},
+  {.prefixcmd = 0,.cmd = "stm led --off\r", .response = "led off\r\n",.function = sendresponse,.cb = LedOff},
+  {.prefixcmd = 0,.cmd = "stm get --led\r", .response = "led reading state..\r\n",.function = sendresponse,.cb = getledstate},
+  {.prefixcmd = 1,.cmd = "stm servo=", .response = "setting servo angle..\r\n",.function = sendresponse,.cb = servoanglerxed},
 };
 
 #define commanddbsize (sizeof(uartfsm)/sizeof(uartfsm[0]))
@@ -201,6 +202,32 @@ void getledstate(void)
     }
 }
 
+void servoanglerxed(void)
+{
+  printdebugstring("servo angle rxed\r\n");
+}
+
+
+static int is_prefix_of(const char *haystack, const char *needle)
+{
+    while (*needle != '\0')
+    {
+        if (*haystack != *needle)
+        {
+            return 0;
+        }
+        
+        if (*haystack == '\0')
+        {
+            return 0;
+        }
+
+        haystack++;
+        needle++;
+    }
+
+    return 1;
+}
 
 
 void UartFsm_Run(void)
@@ -212,6 +239,8 @@ void UartFsm_Run(void)
       str_allsmallcase(readmymessage);
       for(uint32_t i=0;i<commanddbsize;i++)
       {
+        if(uartfsm[i].prefixcmd == 0)
+        {
           if(str_equal(readmymessage,uartfsm[i].cmd))
           {
               matchfound = 1;
@@ -225,7 +254,21 @@ void UartFsm_Run(void)
               }
               break;
           }
-          else
+        }
+        else if(uartfsm[i].prefixcmd == 1)
+        {
+          if(is_prefix_of(readmymessage, uartfsm[i].cmd) == 1)
+          {
+            
+              matchfound = 1;
+              if(uartfsm[i].cb!=NULL )
+              {
+                 uartfsm[i].cb();
+              }
+              break;
+          }
+        }
+        else
           {
           
           }
