@@ -35,10 +35,6 @@ const Fsm_t myLedSm[] = {
 
     };
 
-
-
-
-
 uartfsm_t uartfsm[] = 
 {
   {.prefixcmd = 0,.cmd = "stm --version\r", .response = "version 1.0\r\n",.function = sendresponse,.cb = NULL},

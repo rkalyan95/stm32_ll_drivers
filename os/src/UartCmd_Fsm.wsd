@@ -10,5 +10,6 @@ ReadNewCmd ----> TurnOffLed : "stm led --off"
 TurnOffLed ---> ReadNewCmd
 ReadNewCmd ---> SendLedStatus : "stm get --led"
 SendLedStatus ----> ReadNewCmd
-
+ReadNewCmd ---> SetServoAngle : "stm servo=angle"
+SetServoAngle ----> ReadNewCmd
 @enduml

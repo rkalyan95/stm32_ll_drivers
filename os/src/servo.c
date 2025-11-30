@@ -25,13 +25,11 @@ TimerSpecificConfigs_t ServoTimer = {
 };
 
 
-ChannelSpecificConfigs_t ServoTopChannel = {
+ChannelSpecificConfigs_t ServoMiddleFbChannel = {
     .TimerNumber = TIMER_CH1,
     .TimerType = INPUT_CAPTURE_BOTH_EDGES,
     .CapCompareMapping = INPUT_CAPTURE_TI1,
-    //.OutCmpMode = TIMER_OUT_PWM_MODE1,
     .InputCapturFilter = NO_FILTER,
-    .TimerCompareValue = 59,
 };
 
 ChannelSpecificConfigs_t ServoMiddleChannel = {
@@ -41,14 +39,14 @@ ChannelSpecificConfigs_t ServoMiddleChannel = {
     .TimerCompareValue = 10,
 };
 
-ChannelSpecificConfigs_t ServoBottomChannel = {
+ChannelSpecificConfigs_t ServoBottomFbChannel = {
     .TimerNumber = TIMER_CH3,
-    .TimerType = TIMER_OUTPUT_COMPARE,
-    .OutCmpMode = TIMER_OUT_PWM_MODE1,
-    .TimerCompareValue = 10,
+    .TimerType = INPUT_CAPTURE_BOTH_EDGES,
+    .CapCompareMapping = INPUT_CAPTURE_TI1,
+    .InputCapturFilter = NO_FILTER,
 };
 
-ChannelSpecificConfigs_t ServoHandChannel = {
+ChannelSpecificConfigs_t ServoBottomChannel = {
     .TimerNumber = TIMER_CH4,
     .TimerType = TIMER_OUTPUT_COMPARE,
     .OutCmpMode = TIMER_OUT_PWM_MODE1,
@@ -60,10 +58,10 @@ ChannelSpecificConfigs_t ServoHandChannel = {
 
 void ServoInit(void)
 {
-    TimerInit(&ServoTimer,&ServoTopChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
-    TimerInit(&ServoTimer,&ServoBottomChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
-    TimerInit(&ServoTimer,&ServoHandChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
+    TimerInit(&ServoTimer,&ServoMiddleFbChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
     TimerInit(&ServoTimer,&ServoMiddleChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
+    TimerInit(&ServoTimer,&ServoBottomFbChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
+    TimerInit(&ServoTimer,&ServoBottomChannel,TIMER_PRESCALER, TIMER_ARRVALUE);
 }
 
 void TurnServo(float angle,uint8_t chIdx)

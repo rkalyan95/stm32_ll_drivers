@@ -3,6 +3,7 @@
 #include "stm32l433_ll_gpio_cfg.h"
 #include <stddef.h>
 
+
 #define MAX_RETRY   3U
 
 volatile  stm32_ll_usart_cr1_t *usart_cr1 =  ((volatile stm32_ll_usart_cr1_t *) (USART1_BASE + 0x00));
@@ -24,7 +25,7 @@ const uint8_t bootMsg[] = "Starting up.....Welcome to Bitwise\r\n";
 
 uart_ll_config_t uart_ll_config = {
     .baudrate = 9600,
-    .datalen = datalen_8, //8 bits data 1 bit parity as per datasheet
+    .datalen = datalen_8, //9 bitsif parity enabled . data 1 bit parity as per datasheet
     .datadirection = lsb_first,
     .duplexity = full_duplex,
     .stopbits = one_stop_bit,

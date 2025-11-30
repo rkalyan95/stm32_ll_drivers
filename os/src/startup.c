@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stm32l433xx.h>
 extern uint32_t _estack;
+extern uint32_t _stext; 
 extern uint32_t _etext; 
 extern uint32_t _sdata;
 extern uint32_t _edata;
@@ -269,7 +270,10 @@ void reset_handler(void)
     uint32_t data_size = (uint32_t)&_edata - (uint32_t)&_sdata;
     uint8_t *flash_data = (uint8_t*)&_etext;
     uint8_t *sram_data = (uint8_t *)&_sdata;
-    SCB->VTOR = (uint32_t)0x08000000U; // Point VTOR to the start of Flash
+  uint32_t *vector_table = (uint32_t *) &_stext;
+  
+    //SCB->VTOR = (uint32_t)0x08000000U; // Point VTOR to the start of Flash
+      SCB->VTOR = (uint32_t)0x08001000U;
 for (uint32_t i = 0; i < data_size; i++)
   {
     sram_data[i] = flash_data[i];

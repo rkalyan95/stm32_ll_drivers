@@ -12,6 +12,7 @@ COMMON_INCLUDES := -I ../CMSIS/Core/Include/ \
 				   -I ../stm32_ll_flash/include \
 				   -I ../stm32_ll_Timer/include \
 				   -I ../stm32_ll_uxart/include \
+				   -I ../stm32_ll_dma/include\
 				   -I ./include \
 				   -I ./src \
 

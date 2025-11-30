@@ -1,0 +1,48 @@
+@startuml
+
+enum prio_t
+{
+    VERY_HIGH,
+    HIGH,
+    MEDIUM,
+    LOW
+}
+
+enum packet_t
+{
+    BYTE,
+    HALFWORD,
+    WORD
+}
+
+enum transfermode_t
+{
+    MEM_TO_PERIPH,
+    PERIPH_TO_MEM,
+    PERIPH_TO_PERIPH,
+}
+
+enum dmaisr_t
+{
+    FULL_TX,
+    HALF_TX,
+    ERROR_TX,
+}
+
+
+entity Dma_ll_functions 
+{
+    +Err_t DmaInit(uint32_t *src , uint32_t *dest);
+    +Err_t DmaSetPrio(uint8_t chIdx , prio_t prio);
+    +Err_t DmaSetPcktSize(uint8_t chIdx,packet_t pckt);
+    +Err_t DmaSetDataSize(uint8_t chIdx,uint16_t size);
+    +Err_t DmaSetTransferMode(uint8_t chIdx,transfermode_t mode);
+    +Err_t DmaSetInterrupt(uint8_t chIdx,dmaisr_t isrtype);
+}
+
+Dma_ll_functions --> dmaisr_t
+Dma_ll_functions --> transfermode_t
+Dma_ll_functions --> packet_t
+Dma_ll_functions --> prio_t
+
+@enduml

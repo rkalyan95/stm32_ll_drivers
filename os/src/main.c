@@ -14,7 +14,7 @@
 #include "stm32_ll_timers_cfg.h"
 #include "servo.h"
 #include "stm32_ll_usart.h"
-
+#include "stm32_ll_dma.h"
 FirmwareVersion_t Version;
 
 float angle=0.0f;
@@ -55,6 +55,8 @@ static void boot_init(void)
     init_usart();
     delayrndom(50000);
     printdebugstring("Welcome to STM32 UART\r\n");
+
+    //DmaInit(NULL,NULL);
 }
 
 
